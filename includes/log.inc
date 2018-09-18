@@ -27,6 +27,7 @@ function islandora_find_replace_operation_log($find_replace) {
   $diff_exists = module_exists('islandora_pretty_text_diff');
   $success_header = array(
     t('Label'),
+    t('PID'),
     t('Datastream Versions'),
   );
   if ($diff_exists) {
@@ -39,6 +40,7 @@ function islandora_find_replace_operation_log($find_replace) {
     $success_rows[$pid] = array(
       l($object->label, 'islandora/object/' . $object->id,
         array('attributes' => array('target' => '_blank'))),
+      t($pid),
       l($dsid, 'islandora/object/' . $object->id . '/datastream/' . $dsid . '/version',
         array('attributes' => array('target' => '_blank'))),
     );

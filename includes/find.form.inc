@@ -37,12 +37,12 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#title' => t('Content Model'),
     '#description' => t('Limit the search to objects with the selected content model.'),
     '#options' => $cmodel_options,
-    '#required' => TRUE,
+    '#required' => FALSE,
+    '#empty_option' => '--None--',
   );
 
   $collections = islandora_basic_collection_get_collections();
   $collection_options = array();
-  $collection_options[] = t('- Select -');
   foreach ($collections as $collection) {
     $collection_options[$collection['pid']] = check_plain($collection['label']) . ' - (' . $collection['pid'] . ')';
   }
@@ -51,6 +51,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#title' => t('Collection'),
     '#description' => t('Limit the search to objects directly in the selected collection.'),
     '#options' => $collection_options,
+    '#required' => TRUE,
   );
 
   $form['find']['date'] = array(

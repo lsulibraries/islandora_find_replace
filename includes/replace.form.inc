@@ -54,9 +54,24 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
   if ($diff_exists) {
     $header['preview'] = t('Preview Diff');
   }
+
+  $form['process_all'] =  array(
+    '#type' => 'checkbox',
+    '#title' => t('Check here to process all results'),
+  );
+  if (count($options)) {
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Replace String'),
+    );
+  }
   $form['back'] = array(
     '#type' => 'markup',
     '#markup' => l(t('Back (New Search)'), 'admin/islandora/tools/find-replace/find'),
+  );
+  $form['total'] = array(
+    '#type' => 'markup',
+    '#markup' =>  "<p>". "Total number of items that match search: " . t(count($find_replace['find_results'])) . "</p>",
   );
   $form['preview'] = array(
     '#type' => 'tableselect',
@@ -64,18 +79,9 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
     '#options' => $options,
     '#empty' => l(t('No matching objects were found. Search again.'),
       'admin/islandora/tools/find-replace/find'),
-  );
-  $form['process_all'] =  array(
-    '#type' => 'checkbox',
-    '#title' => t('Check here to process all found results(cannot be undone!)'),
+    '#js_select' => FALSE,
   );
 
-  if (count($options)) {
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Replace String'),
-    );
-  }
 
   return $form;
 }
