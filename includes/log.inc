@@ -21,7 +21,6 @@ function islandora_find_replace_operation_log($find_replace) {
   }
 
   $revisions = unserialize($find_replace['revisions']);
-
   $dsid = $find_replace['dsid'];
 
   $diff_exists = module_exists('islandora_pretty_text_diff');
@@ -105,18 +104,22 @@ function islandora_find_replace_operation_log($find_replace) {
   return $output;
 }
 
+
 function download_pid_csv(){
-  $last = db_query('SELECT MAX(id) from {islandora_find_replace}');
-  $last_id = $last->fetchField();
-  $query = db_query('SELECT revisions FROM {islandora_find_replace} WHERE id=' . '\'' .$last_id . '\'');
+  $test = explode('/',$_GET['q']);
+  $id = '';
+  if(gettype((int)$test['5']) == 'integer'){
+    $id = $test['5'];
+  }
+  $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}",array(':id' => $id));
+  $log_id = $current_log->fetchField();
+  $query = db_query('SELECT revisions FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
   $csv = array();
   foreach ($query as $result) {
-  $chunks = unserialize($result->revisions);
-  $changed  = array_keys($chunks['success']);
-  foreach($changed as $pid) {
-    $csv[] = $pid.', ';
-     }
-   }
+    $chunks = unserialize($result->revisions);
+    $changed  = array_keys($chunks['success']);
+    $csv = implode(',', $changed);
+  }
   $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
   $headers = [
     'Content-type' => 'text/csv; utf-8',
