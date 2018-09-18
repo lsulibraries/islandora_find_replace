@@ -92,6 +92,9 @@ function islandora_find_replace_operation_log($find_replace) {
           array('header' => $success_header, 'rows' => $success_rows)),
     ),
   );
+
+  $output['csv_download'] = drupal_get_form('log_dl_form');
+
   if (!empty($fail_output)) {
     $output['fail'] = array(
       '#type' => 'markup',
@@ -101,6 +104,37 @@ function islandora_find_replace_operation_log($find_replace) {
 
   return $output;
 }
+
+function download_pid_csv(){
+  $last = db_query('SELECT MAX(id) from {islandora_find_replace}');
+  $last_id = $last->fetchField();
+  $query = db_query('SELECT revisions FROM {islandora_find_replace} WHERE id=' . '\'' .$last_id . '\'');
+  $csv = array();
+  foreach ($query as $result) {
+  $chunks = unserialize($result->revisions);
+  $changed  = array_keys($chunks['success']);
+  foreach($changed as $pid) {
+    $csv[] = $pid.', ';
+     }
+   }
+  $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
+  $headers = [
+    'Content-type' => 'text/csv; utf-8',
+    'Content-Dispositon' => 'attachment; filename=islandora_find_replace_results.csv'
+  ];
+  file_transfer($filename, $headers);
+}
+
+function log_dl_form($form, &$form_state) {
+  $form['csv_downloadx'] = array(
+     '#type' => 'submit',
+     '#value' => 'Download CSV of PIDS',
+     '#submit' => array('download_pid_csv'),
+  );
+ return $form;
+}
+
+
 
 /**
  * Get the datastream's version ID based on a recorded datastream location.
