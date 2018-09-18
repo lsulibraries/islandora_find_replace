@@ -104,7 +104,13 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#required' => TRUE,
     '#rows' => 1,
   );
-
+  $form['regex'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Regular Expression'),
+    '#description' => t('Must be a valid regular expression with a replacement'),
+    '#required' => FALSE,
+    '#rows' => 1,
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Find objects'),
@@ -139,6 +145,9 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
       form_set_error('date_from', t('The Date From cannot be after the Date To.'));
     }
   }
+  if(preg_match($val['regex'],null) === FALSE) {
+    form_set_error('regex',t('The regular expression must be valid.'));
+  }
 }
 
 /**
@@ -161,6 +170,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'cmodel' => $form_state['values']['content_model'],
     'dsid' => $form_state['values']['dsid'],
     'find' => $form_state['values']['search'],
+    'regex_find' => $form_state['values']['regex'],
     'replacement' => $form_state['values']['replace'],
     'state' => 'submitted',
   );
@@ -174,6 +184,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
         $candidate,
         $form_state['values']['dsid'],
         $form_state['values']['search'],
+        $form_state['values']['regex'],
         $find_replace['id'],
       ),
     );

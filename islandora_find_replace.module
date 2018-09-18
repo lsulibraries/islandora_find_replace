@@ -276,6 +276,10 @@ function islandora_find_replace_string_replace($search, $replace, $content) {
   return str_replace($search, $replace, $content);
 }
 
+function islandora_find_replace_regex_replace($regex, $content) {
+  return preg_match($regex,$content);
+}
+
 /**
  * Find objects to perform the find/replace operation based on user form values.
  *
@@ -353,6 +357,9 @@ function islandora_find_replace_preview($find_replace, $object) {
       $find_replace['find'],
       $find_replace['replacement'],
       $content1);
+    // $content3 = islandora_find_replace_regex_replace(
+    //   $find_replace['regex'], $content1
+    // );
     if (strpos($datastream->mimetype, 'xml') !== FALSE) {
       return islandora_pretty_text_diff_content(
         htmlentities($content1, ENT_NOQUOTES),
