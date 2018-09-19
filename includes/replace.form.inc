@@ -19,11 +19,11 @@
  *   The populated form array.
  */
 function islandora_find_replace_replace_form($form, &$form_state, $find_replace) {
+  dpm($find_replace);
   if ($find_replace['state'] != 'search') {
     drupal_set_message(t('There was a problem loading the submission.'), 'error');
     drupal_goto('admin/islandora/tools/find-replace/find');
   }
-
   $form_state['storage']['find_replace'] = $find_replace;
   $diff_exists = module_exists('islandora_pretty_text_diff');
   $options = array();
@@ -81,8 +81,6 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
       'admin/islandora/tools/find-replace/find'),
     '#js_select' => FALSE,
   );
-
-
   return $form;
 }
 
@@ -96,7 +94,6 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
  */
 function islandora_find_replace_replace_form_submit($form, &$form_state) {
   $selected = $form_state['values']['process_all'] ? array_keys($form_state['values']['preview']) : array_keys(array_filter($form_state['values']['preview']));
-
   $operations = array();
   foreach ($selected as $select) {
     $operations[] = array('islandora_find_replace_update_objects', array(
@@ -105,6 +102,7 @@ function islandora_find_replace_replace_form_submit($form, &$form_state) {
       $form_state['storage']['find_replace']['find'],
       $form_state['storage']['find_replace']['replacement'],
       $form_state['storage']['find_replace']['id']),
+
     );
   }
   $batch = array(

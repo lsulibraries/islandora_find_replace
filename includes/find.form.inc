@@ -88,27 +88,22 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#description' => t('A single datastream ID (DSID) to search for the string.'),
     '#required' => TRUE,
   );
-
+  $form['option'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use regular expression?'),
+  );
   $form['search'] = array(
     '#type' => 'textarea',
-    '#title' => t('Search text'),
-    '#description' => t('The text to search for in the datastream.'),
+    '#title' => t('Search text or regular expression'),
+    '#description' => t('The text to search for in the datastream or a regular expression (regex) to search for patterns.'),
     '#required' => TRUE,
     '#rows' => 1,
   );
-
   $form['replace'] = array(
     '#type' => 'textarea',
     '#title' => t('Replacement text'),
     '#description' => t('The text to replace the search with. Use (empty) to replace the search text with nothing.'),
     '#required' => TRUE,
-    '#rows' => 1,
-  );
-  $form['regex'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Regular Expression'),
-    '#description' => t('Must be a valid regular expression with a replacement'),
-    '#required' => FALSE,
     '#rows' => 1,
   );
   $form['submit'] = array(
@@ -145,8 +140,10 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
       form_set_error('date_from', t('The Date From cannot be after the Date To.'));
     }
   }
-  if(preg_match($val['regex'],null) === FALSE) {
-    form_set_error('regex',t('The regular expression must be valid.'));
+  if ($val['option'] == TRUE) {
+    if(preg_match($val['search'],null) === FALSE) {
+      form_set_error('regex',t('The regular expression must be valid.'));
+    }
   }
 }
 
@@ -170,7 +167,6 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'cmodel' => $form_state['values']['content_model'],
     'dsid' => $form_state['values']['dsid'],
     'find' => $form_state['values']['search'],
-    'regex_find' => $form_state['values']['regex'],
     'replacement' => $form_state['values']['replace'],
     'state' => 'submitted',
   );
@@ -184,8 +180,8 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
         $candidate,
         $form_state['values']['dsid'],
         $form_state['values']['search'],
-        $form_state['values']['regex'],
         $find_replace['id'],
+        $form_state['values']['option']
       ),
     );
   }
