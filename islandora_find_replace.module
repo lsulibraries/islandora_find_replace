@@ -202,12 +202,15 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
   if (!isset($context['results']['submission_id'])) {
     $context['results']['submission_id'] = $id;
   }
+  $query = 'SELECT regex from islandora_find_replace where id=' .'\''. $id .'\'';
+  $ask = db_query($query);
+  $regex = $ask->fetchField();
   $object = islandora_object_load($pid);
   $success = FALSE;
   if (isset($object[$dsid]) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
     try {
       $location_before = $object[$dsid]->location;
-      $content = islandora_find_replace_string_replace($search, $replace, $object[$dsid]->content);
+      $content = islandora_find_replace_string_replace($search, $replace, $object[$dsid]->content, $regex);
       $object[$dsid]->setContentFromString($content);
 
       $location_after = $object[$dsid]->location;
@@ -271,16 +274,14 @@ function islandora_find_replace_update_complete($success, $results, $operations)
  * @return mixed
  *   The modified string if successful.
  */
-function islandora_find_replace_string_replace($search, $replace, $content) {
+function islandora_find_replace_string_replace($search, $replace, $content, $regex) {
   if ($replace == '(empty)') {
     $replace = '';
   }
-   if(preg_match(preg_check_delimit($search), null)){
-     dpm('preg_replace');
+   if($regex){
     return preg_replace(preg_check_delimit($search), $replace, $content);
   }
   else{
-    dpm('str_replace');
     return str_replace($search, $replace, $content);
   }
 }
@@ -363,12 +364,14 @@ function islandora_find_replace_query($model = FALSE, $collection, $date_propert
 function islandora_find_replace_preview($find_replace, $object) {
   if (module_exists('islandora_pretty_text_diff')) {
     $dsid = $find_replace['dsid'];
+    $regex = $find_replace['regex'];
     $datastream = $object[$dsid];
     $content1 = $datastream->content;
     $content2 = islandora_find_replace_string_replace(
       $find_replace['find'],
       $find_replace['replacement'],
-      $content1
+      $content1,
+      $regex
     );
     if (strpos($datastream->mimetype, 'xml') !== FALSE) {
       return islandora_pretty_text_diff_content(

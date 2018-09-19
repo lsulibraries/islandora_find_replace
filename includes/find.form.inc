@@ -88,7 +88,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#description' => t('A single datastream ID (DSID) to search for the string.'),
     '#required' => TRUE,
   );
-  $form['option'] = array(
+  $form['regex'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use regular expression?'),
   );
@@ -140,7 +140,7 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
       form_set_error('date_from', t('The Date From cannot be after the Date To.'));
     }
   }
-  if ($val['option'] == TRUE) {
+  if ($val['regex'] == TRUE) {
     if(preg_match(preg_check_delimit($val['search']),null) === FALSE) {
       form_set_error('regex',t('The regular expression must be valid.'));
     }
@@ -169,7 +169,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'find' => $form_state['values']['search'],
     'replacement' => $form_state['values']['replace'],
     'state' => 'submitted',
-    'option' => $form_state['values']['option'],
+    'regex' => $form_state['values']['regex'],
   );
   drupal_write_record('islandora_find_replace', $find_replace);
 
@@ -182,7 +182,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
         $form_state['values']['dsid'],
         $form_state['values']['search'],
         $find_replace['id'],
-        $form_state['values']['option']
+        $form_state['values']['regex']
       ),
     );
   }
