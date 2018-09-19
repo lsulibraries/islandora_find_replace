@@ -84,15 +84,14 @@ function islandora_find_replace_operation_log($find_replace) {
     }
     $fail_output .= theme('table', array('header' => $fail_header, 'rows' => $fail_rows));
   }
-  $output = array(
-    'success' => array(
-      '#type' => 'markup',
-      '#markup' => t('<h2>Successful Replacements</h2>') . theme('table',
-          array('header' => $success_header, 'rows' => $success_rows)),
-    ),
+  $output= array();
+  $output['csv_download'] = drupal_get_form('log_dl_form');
+  $output['success'] = array(
+    '#type' => 'markup',
+    '#markup' => t('<h2>Successful Replacements</h2>') . theme('table',
+      array('header' => $success_header, 'rows' => $success_rows)),
   );
 
-  $output['csv_download'] = drupal_get_form('log_dl_form');
 
   if (!empty($fail_output)) {
     $output['fail'] = array(
