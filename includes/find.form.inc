@@ -181,6 +181,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
         $form_state['values']['dsid'],
         $form_state['values']['search'],
         $find_replace['id'],
+        $form_state['values']['option']
       ),
     );
   }

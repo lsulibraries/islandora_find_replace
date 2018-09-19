@@ -143,13 +143,14 @@ function _islandora_find_replace_timestamp_from_form_date($date, $start = TRUE) 
  * @param array $context
  *   Batch context.
  */
-function islandora_find_replace_get_targets($candidate, $dsid, $search, $submission_id, $option, &$context) {
+function islandora_find_replace_get_targets($candidate, $dsid, $search, $submission_id, $regex, &$context) {
+
   if (!isset($context['results']['submission_id'])) {
     $context['results']['submission_id'] = $submission_id;
   }
   $object = islandora_object_load($candidate['object']);
   $content = $object[$dsid]->content;
-  $count =  $option ? preg_match_all($search, $content) : substr_count($content, $search);
+  $count =  $regex ? preg_match_all("/$search/", $content) : substr_count($content, $search);
   if (isset($object[$dsid]) && $count) {
     if (islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
       $candidate['count'] = $count;
