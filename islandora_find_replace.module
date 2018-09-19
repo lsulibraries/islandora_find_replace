@@ -150,7 +150,7 @@ function islandora_find_replace_get_targets($candidate, $dsid, $search, $submiss
   }
   $object = islandora_object_load($candidate['object']);
   $content = $object[$dsid]->content;
-  $count =  $regex ? preg_match_all("/$search/", $content) : substr_count($content, $search);
+  $count =  $regex ? preg_match_all(preg_check_delimit($search), $content) : substr_count($content, $search);
   if (isset($object[$dsid]) && $count) {
     if (islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
       $candidate['count'] = $count;
@@ -170,9 +170,6 @@ function islandora_find_replace_get_targets($candidate, $dsid, $search, $submiss
  *   Unprocessed operations if $success is FALSE.
  */
 function islandora_find_replace_find_complete($success, $results, $operations) {
-  dpm($success);
-  dpm($results);
-  dpm($operations);
   $find_replace = islandora_find_replace_load($results['submission_id']);
   if (isset($results['find_results'])) {
     $find_results = $results['find_results'];
@@ -254,9 +251,6 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
  *   Unprocessed operations if $success is FALSE.
  */
 function islandora_find_replace_update_complete($success, $results, $operations) {
-  dpm($success);
-  dpm($results);
-  dpm($operations);
   db_update('islandora_find_replace')
     ->fields(array('state' => 'complete'))
     ->condition('id', $results['submission_id'])
@@ -281,14 +275,21 @@ function islandora_find_replace_string_replace($search, $replace, $content) {
   if ($replace == '(empty)') {
     $replace = '';
   }
-  // if(preg_match($search, null) != FALSE){
-  //   return preg_replace($search, $replace, $content);
-  // }
-  // else{
-  // }
-  return str_replace($search, $replace, $content);
+   if(preg_match(preg_check_delimit($search), null)){
+     dpm('preg_replace');
+    return preg_replace(preg_check_delimit($search), $replace, $content);
+  }
+  else{
+    dpm('str_replace');
+    return str_replace($search, $replace, $content);
+  }
 }
 
+function preg_check_delimit($search) {
+  $search = str_replace('/', '\/', $search);
+  $search = '/' . $search . '/';
+  return $search;
+}
 
 
 /**
@@ -360,7 +361,6 @@ function islandora_find_replace_query($model = FALSE, $collection, $date_propert
  *   Rendered diff from the Islandora Pretty Text Diff module.
  */
 function islandora_find_replace_preview($find_replace, $object) {
-  dpm($find_replace);
   if (module_exists('islandora_pretty_text_diff')) {
     $dsid = $find_replace['dsid'];
     $datastream = $object[$dsid];

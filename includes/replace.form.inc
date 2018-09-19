@@ -19,7 +19,6 @@
  *   The populated form array.
  */
 function islandora_find_replace_replace_form($form, &$form_state, $find_replace) {
-  dpm($find_replace);
   if ($find_replace['state'] != 'search') {
     drupal_set_message(t('There was a problem loading the submission.'), 'error');
     drupal_goto('admin/islandora/tools/find-replace/find');
