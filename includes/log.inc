@@ -86,6 +86,8 @@ function islandora_find_replace_operation_log($find_replace) {
   }
   $output= array();
   $output['csv_download'] = drupal_get_form('log_dl_form');
+  $output['revert'] = drupal_get_form('revert_form');
+
   $output['success'] = array(
     '#type' => 'markup',
     '#markup' => t('<h2>Successful Replacements</h2>') . theme('table',
@@ -103,16 +105,25 @@ function islandora_find_replace_operation_log($find_replace) {
   return $output;
 }
 
-
-function download_pid_csv(){
+function get_id_from_path() {
   $test = explode('/',$_GET['q']);
   $id = '';
   if(gettype((int)$test['5']) == 'integer'){
     $id = $test['5'];
   }
+  return $id;
+}
+
+function get_revisions($id) {
   $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}",array(':id' => $id));
   $log_id = $current_log->fetchField();
   $query = db_query('SELECT revisions FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
+  return $query;
+}
+
+function download_pid_csv(){
+  $id = get_id_from_path();
+  $query = get_revisions($id);
   $csv = array();
   foreach ($query as $result) {
     $chunks = unserialize($result->revisions);
@@ -131,12 +142,31 @@ function log_dl_form($form, &$form_state) {
   $form['csv_downloadx'] = array(
      '#type' => 'submit',
      '#value' => 'Download CSV of PIDS',
-     '#submit' => array('download_pid_csv'),
+     '#submit' => array('revert_find_replace'),
   );
  return $form;
 }
 
+function revert_find_replace() {
+  $id = get_id_from_path();
+  $query = get_revisions($id);
+  $csv = array();
+  foreach ($query as $result) {
+    $chunks = unserialize($result->revisions);
+    $changed  = array_keys($chunks['success']);
+    $csv = implode(',', $changed);
+  }
+  dpm($csv);
+}
 
+function revert_form($form, &$form_state) {
+  $form['revert'] = array(
+    '#type' => 'submit',
+    '#value' => 'Revert this batch',
+    '#submit' => array('revert_find_replace'),
+  );
+  return $form;
+}
 
 /**
  * Get the datastream's version ID based on a recorded datastream location.
