@@ -169,6 +169,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'find' => $form_state['values']['search'],
     'replacement' => $form_state['values']['replace'],
     'state' => 'submitted',
+    'option' => $form_state['values']['option'],
   );
   drupal_write_record('islandora_find_replace', $find_replace);
 
