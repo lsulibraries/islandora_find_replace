@@ -103,7 +103,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#type' => 'textarea',
     '#title' => t('Replacement text'),
     '#description' => t('The text to replace the search with. Use (empty) to replace the search text with nothing.'),
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#rows' => 1,
   );
   $form['submit'] = array(
