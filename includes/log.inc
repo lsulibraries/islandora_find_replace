@@ -114,17 +114,17 @@ function get_id_from_path() {
   return $id;
 }
 
-function get_revisions($id) {
+function get_log_field($id, $field) {
   $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}",array(':id' => $id));
   $log_id = $current_log->fetchField();
-  $query = db_query('SELECT revisions FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
+  $query = db_query('SELECT ' . $field  . ' FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
   return $query;
 }
 
 function download_pid_csv(){
   $id = get_id_from_path();
-  $query = get_revisions($id);
-  $csv = implode(',', unchunk_query($query));
+  $query = get_log_field($id, 'revisions');
+  $csv = implode(',', get_changed_pids($query));
   $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
   $headers = [
     'Content-type' => 'text/csv; utf-8',
@@ -142,24 +142,25 @@ function log_dl_form($form, &$form_state) {
  return $form;
 }
 
-function unchunk_query($query) {
-  foreach ($query as $result) {
-    $chunks = unserialize($result->revisions);
-    $changed  = array_keys($chunks['success']);
-    return $changed;
-  }
+function get_changed_pids($query) {
+  $result = $query->fetchField();
+  $chunks = unserialize($result);
+  $changed  = array_keys($chunks['success']);
+  return $changed;
 }
 
 function revert_find_replace() {
   $id = get_id_from_path();
-  $query = get_revisions($id);
-  $csv = unchunk_query($query);
+  $query = get_log_field($id,'revisions');
+  $csv = get_changed_pids($query);
+  $dsid = get_log_field($id, 'dsid');
+  $dsid = $dsid->fetchField();
   $operations = array();
   foreach ($csv as $pid) {
     $operations[] = array(
       'islandora_revert_datastream',
       array(
-        $pid,
+        $pid, $dsid,
       ),
     );
   }
@@ -168,11 +169,35 @@ function revert_find_replace() {
     'operations' => $operations,
     'title' => t('Revert each object'),
     'init_message' => t('Beginning revert.'),
-    'finished' => 'islandora_find_replace_find_complete',
+    'finished' => 'revert_finished',
     'progress_message' => t('Processed @current out of @total.'),
   );
-
   batch_set($batch);
+}
+
+function revert_finished() {
+  dsm('Datastream revert finished.');
+}
+
+// $pid = 'loyno-p16313coll87:9';
+// $path = array('/islandora/object/', '/datastream/', '/version/1/view');
+// $base = $GLOBALS['base_url'];
+// $url = $base . $path[0] . $pid . $path[1] . 'MODS' . $path[2];
+// $obj = islandora_object_load($pid);
+// foreach($obj as $ds){
+//   dpm($ds);
+//   }
+
+function islandora_revert_datastream($pid, $dsid){
+  $obj = islandora_object_load($pid);
+  $path = array('/islandora/object/', '/datastream/', '/version/1/view');
+  $base = $GLOBALS['base_url'];
+  $url = $base . $path[0] . $pid . $path[1] . $dsid . $path[2];
+  $ds = $obj[$dsid];
+  $ds->setContentFromUrl($url);
+  $obj->ingestDatastream($ds);
+
+
 }
 
 function revert_form($form, &$form_state) {
