@@ -267,6 +267,26 @@ function revert_finished($success, $results, $operations) {
 }
 
 /**
+ * The completion callback for the "revert" batch.
+ *
+ * @param bool $success
+ *   If the batch successfully completed.
+ * @param array $results
+ *   An array of result data.
+ * @param array $operations
+ *   Unprocessed operations if $success is FALSE.
+ */
+function revert_finished($success, $results, $operations) {
+  drupal_set_message(t('Revert complete!'));
+}
+
+function islandora_revert_datastream($pid, $dsid, &$context){
+  $obj = islandora_object_load($pid);
+  $string = $obj[$dsid][1]->content;
+  $ds = $obj[$dsid];
+  $ds->setContentFromString($string);
+}
+/**
  * Peform a string replacement.
  *
  * @param string $search

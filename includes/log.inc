@@ -148,6 +148,9 @@ function get_changed_pids($query) {
   return $changed;
 }
 
+
+
+
 function revert_find_replace() {
   $id = get_id_from_path();
   $query = get_log_field($id,'revisions');
@@ -164,13 +167,6 @@ function revert_find_replace() {
     );
   }
   return $operations;
-}
-
-function islandora_revert_datastream($pid, $dsid, &$context){
-  $obj = islandora_object_load($pid);
-  $string = $obj[$dsid][1]->content;
-  $ds = $obj[$dsid];
-  $ds->setContentFromString($string);
 }
 
 function revert_form($form, &$form_state) {
