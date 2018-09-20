@@ -179,25 +179,17 @@ function revert_finished() {
   dsm('Datastream revert finished.');
 }
 
-// $pid = 'loyno-p16313coll87:9';
-// $path = array('/islandora/object/', '/datastream/', '/version/1/view');
-// $base = $GLOBALS['base_url'];
-// $url = $base . $path[0] . $pid . $path[1] . 'MODS' . $path[2];
-// $obj = islandora_object_load($pid);
-// foreach($obj as $ds){
-//   dpm($ds);
-//   }
+$pid = 'loyno-p16313coll87:9';
+$obj = islandora_object_load($pid);
+$string = $obj['MODS'][1]->content;
+$ds = $obj['MODS'];
+$ds->setContentFromString($string);
 
 function islandora_revert_datastream($pid, $dsid){
   $obj = islandora_object_load($pid);
-  $path = array('/islandora/object/', '/datastream/', '/version/1/view');
-  $base = $GLOBALS['base_url'];
-  $url = $base . $path[0] . $pid . $path[1] . $dsid . $path[2];
+  $string = $obj[$dsid][1]->content;
   $ds = $obj[$dsid];
-  $ds->setContentFromUrl($url);
-  $obj->ingestDatastream($ds);
-
-
+  $ds->setContentFromString($string);
 }
 
 function revert_form($form, &$form_state) {
