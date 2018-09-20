@@ -261,6 +261,11 @@ function islandora_find_replace_update_complete($success, $results, $operations)
   drupal_set_message(t('Find and Replace complete!'));
 }
 
+
+function revert_finished($success, $results, $operations) {
+  drupal_set_message(t('Revert complete!'));
+}
+
 /**
  * Peform a string replacement.
  *
