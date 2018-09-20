@@ -86,7 +86,7 @@ function islandora_find_replace_operation_log($find_replace) {
   }
   $output= array();
   $output['csv_download'] = drupal_get_form('log_dl_form');
-  //$output['revert'] = drupal_get_form('revert_form');
+  $output['revert'] = drupal_get_form('revert_form');
 
   $output['success'] = array(
     '#type' => 'markup',
@@ -124,12 +124,7 @@ function get_revisions($id) {
 function download_pid_csv(){
   $id = get_id_from_path();
   $query = get_revisions($id);
-  $csv = array();
-  foreach ($query as $result) {
-    $chunks = unserialize($result->revisions);
-    $changed  = array_keys($chunks['success']);
-    $csv = implode(',', $changed);
-  }
+  $csv = implode(',', unchunk_query($query));
   $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
   $headers = [
     'Content-type' => 'text/csv; utf-8',
@@ -147,18 +142,18 @@ function log_dl_form($form, &$form_state) {
  return $form;
 }
 
-
-
+function unchunk_query($query) {
+  foreach ($query as $result) {
+    $chunks = unserialize($result->revisions);
+    $changed  = array_keys($chunks['success']);
+    return $changed;
+  }
+}
 
 function revert_find_replace() {
   $id = get_id_from_path();
   $query = get_revisions($id);
-  $csv = array();
-  foreach ($query as $result) {
-    $chunks = unserialize($result->revisions);
-    $changed  = array_keys($chunks['success']);
-    $csv = $changed;
-  }
+  $csv = unchunk_query($query);
   $operations = array();
   foreach ($csv as $pid) {
     $operations[] = array(
