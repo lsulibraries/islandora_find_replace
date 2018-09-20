@@ -101,7 +101,6 @@ function islandora_find_replace_operation_log($find_replace) {
       '#markup' => $fail_output,
     );
   }
-
   return $output;
 }
 
@@ -149,6 +148,9 @@ function get_changed_pids($query) {
   return $changed;
 }
 
+
+
+
 function revert_find_replace() {
   $id = get_id_from_path();
   $query = get_log_field($id,'revisions');
@@ -164,39 +166,29 @@ function revert_find_replace() {
       ),
     );
   }
-
-  $batch = array(
-    'operations' => $operations,
-    'title' => t('Revert each object'),
-    'init_message' => t('Beginning revert.'),
-    'finished' => 'revert_finished',
-    'progress_message' => t('Processed @current out of @total.'),
-  );
-  batch_set($batch);
-
-}
-
-function revert_finished() {
-  drupal_set_message('islandora/tools/find-replace');
-  die();
-}
-
-
-function islandora_revert_datastream($pid, $dsid, &$context){
-  $obj = islandora_object_load($pid);
-  $string = $obj[$dsid][1]->content;
-  $ds = $obj[$dsid];
-  $ds->setContentFromString($string);
+  return $operations;
 }
 
 function revert_form($form, &$form_state) {
   $form['revert'] = array(
     '#type' => 'submit',
     '#value' => 'Revert this batch',
-    '#submit' => array('revert_find_replace'),
   );
   return $form;
 }
+
+function revert_form_submit($form, &$form_state) {
+  $batch = array(
+    'operations' => revert_find_replace(),
+    'title' => t('Revert each object'),
+    'init_message' => t('Beginning revert.'),
+    'finished' => 'revert_finished',
+    'progress_message' => t('Processed @current out of @total.'),
+  );
+  batch_set($batch);
+  $form_state['redirect'] = 'admin/islandora/tools/find-replace/find';
+}
+
 
 /**
  * Get the datastream's version ID based on a recorded datastream location.

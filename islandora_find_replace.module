@@ -275,6 +275,12 @@ function revert_finished($success, $results, $operations) {
   drupal_set_message(t('Revert complete!'));
 }
 
+function islandora_revert_datastream($pid, $dsid, &$context){
+  $obj = islandora_object_load($pid);
+  $string = $obj[$dsid][1]->content;
+  $ds = $obj[$dsid];
+  $ds->setContentFromString($string);
+}
 /**
  * Peform a string replacement.
  *
