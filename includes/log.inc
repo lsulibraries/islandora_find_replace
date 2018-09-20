@@ -147,6 +147,9 @@ function log_dl_form($form, &$form_state) {
  return $form;
 }
 
+
+
+
 function revert_find_replace() {
   $id = get_id_from_path();
   $query = get_revisions($id);
@@ -154,9 +157,27 @@ function revert_find_replace() {
   foreach ($query as $result) {
     $chunks = unserialize($result->revisions);
     $changed  = array_keys($chunks['success']);
-    $csv = implode(',', $changed);
+    $csv = $changed;
   }
-  dpm($csv);
+  $operations = array();
+  foreach ($csv as $pid) {
+    $operations[] = array(
+      'islandora_revert_datastream',
+      array(
+        $pid,
+      ),
+    );
+  }
+
+  // $batch = array(
+  //   'operations' => $operations,
+  //   'title' => t('Revert each object'),
+  //   'init_message' => t('Beginning revert.'),
+  //   'finished' => 'islandora_find_replace_find_complete',
+  //   'progress_message' => t('Processed @current out of @total.'),
+  // );
+  //
+  // batch_set($batch);
 }
 
 function revert_form($form, &$form_state) {
