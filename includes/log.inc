@@ -86,7 +86,7 @@ function islandora_find_replace_operation_log($find_replace) {
   }
   $output= array();
   $output['csv_download'] = drupal_get_form('log_dl_form');
-  $output['revert'] = drupal_get_form('revert_form');
+  //$output['revert'] = drupal_get_form('revert_form');
 
   $output['success'] = array(
     '#type' => 'markup',
@@ -139,10 +139,10 @@ function download_pid_csv(){
 }
 
 function log_dl_form($form, &$form_state) {
-  $form['csv_downloadx'] = array(
+  $form['csv_download'] = array(
      '#type' => 'submit',
      '#value' => 'Download CSV of PIDS',
-     '#submit' => array('revert_find_replace'),
+     '#submit' => array('download_pid_csv'),
   );
  return $form;
 }
@@ -169,15 +169,15 @@ function revert_find_replace() {
     );
   }
 
-  // $batch = array(
-  //   'operations' => $operations,
-  //   'title' => t('Revert each object'),
-  //   'init_message' => t('Beginning revert.'),
-  //   'finished' => 'islandora_find_replace_find_complete',
-  //   'progress_message' => t('Processed @current out of @total.'),
-  // );
-  //
-  // batch_set($batch);
+  $batch = array(
+    'operations' => $operations,
+    'title' => t('Revert each object'),
+    'init_message' => t('Beginning revert.'),
+    'finished' => 'islandora_find_replace_find_complete',
+    'progress_message' => t('Processed @current out of @total.'),
+  );
+
+  batch_set($batch);
 }
 
 function revert_form($form, &$form_state) {
