@@ -173,19 +173,16 @@ function revert_find_replace() {
     'progress_message' => t('Processed @current out of @total.'),
   );
   batch_set($batch);
+
 }
 
 function revert_finished() {
-  dpm('Datastream revert finished.');
+  drupal_set_message('islandora/tools/find-replace');
+  die();
 }
 
-$pid = 'lsu-ag-sugar:bulletin';
-$obj = islandora_object_load($pid);
-$string = $obj['MODS'][1]->content;
-$ds = $obj['MODS'];
-$ds->setContentFromString($string);
 
-function islandora_revert_datastream($pid, $dsid){
+function islandora_revert_datastream($pid, $dsid, &$context){
   $obj = islandora_object_load($pid);
   $string = $obj[$dsid][1]->content;
   $ds = $obj[$dsid];
