@@ -44,7 +44,6 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
         array('attributes' => array('target' => '_blank')));
     }
   }
-
   $header = array(
     'label' => t('Label'),
     'datastream' => t('Current Datastream content'),
@@ -53,7 +52,6 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
   if ($diff_exists) {
     $header['preview'] = t('Preview Diff');
   }
-
   $form['process_all'] =  array(
     '#type' => 'checkbox',
     '#title' => t('Check here to process all results'),
@@ -101,7 +99,6 @@ function islandora_find_replace_replace_form_submit($form, &$form_state) {
       $form_state['storage']['find_replace']['find'],
       $form_state['storage']['find_replace']['replacement'],
       $form_state['storage']['find_replace']['id']),
-
     );
   }
   $batch = array(

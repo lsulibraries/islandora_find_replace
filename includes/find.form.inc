@@ -19,19 +19,16 @@
 function islandora_find_replace_find_form($form, &$form_state) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $form = array();
-
   $form['find'] = array(
     '#type' => 'fieldset',
     '#title' => t('Find Objects'),
     '#description' => t('For faster results, make your search as specific as possible. Objects must match all criteria that you select.'),
   );
-
   $content_models = islandora_get_content_models();
   $cmodel_options = array();
   foreach ($content_models as $model) {
     $cmodel_options[$model['pid']] = check_plain($model['label']);
   }
-
   $form['find']['content_model'] = array(
     '#type' => 'select',
     '#title' => t('Content Model'),
@@ -40,7 +37,6 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#required' => FALSE,
     '#empty_option' => '--None--',
   );
-
   $collections = islandora_basic_collection_get_collections();
   $collection_options = array();
   foreach ($collections as $collection) {
@@ -70,7 +66,6 @@ function islandora_find_replace_find_form($form, &$form_state) {
     ),
     '#description' => t('To limit by date, select a date property.'),
   );
-
   $form['find']['date']['date_from'] = array(
     '#type' => 'date',
     '#title' => t('Date From'),
@@ -110,7 +105,6 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Find objects'),
   );
-
   return $form;
 }
 
@@ -162,7 +156,6 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     $form_state['values']['date_from'],
     $form_state['values']['date_to']
   );
-
   $find_replace = array(
     'cmodel' => $form_state['values']['content_model'],
     'dsid' => $form_state['values']['dsid'],
@@ -172,7 +165,6 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'regex' => $form_state['values']['regex'],
   );
   drupal_write_record('islandora_find_replace', $find_replace);
-
   $operations = array();
   foreach ($candidates as $candidate) {
     $operations[] = array(
@@ -186,7 +178,6 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
       ),
     );
   }
-
   $batch = array(
     'operations' => $operations,
     'title' => t('Finding Matching Objects'),
@@ -194,7 +185,6 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'finished' => 'islandora_find_replace_find_complete',
     'progress_message' => t('Processed @current out of @total.'),
   );
-
   batch_set($batch);
   $form_state['redirect'] = 'admin/islandora/tools/find-replace/replace/' . $find_replace['id'];
 }

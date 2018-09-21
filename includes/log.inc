@@ -191,6 +191,9 @@ function revert_find_replace() {
   return $operations;
 }
 
+/**
+ * implements hook_form.
+ */
 function revert_form($form, &$form_state) {
   $form['revert'] = array(
     '#type' => 'submit',
@@ -199,6 +202,9 @@ function revert_form($form, &$form_state) {
   return $form;
 }
 
+/**
+ * implements hook_form_submit.
+ */
 function revert_form_submit($form, &$form_state) {
   $batch = array(
     'operations' => revert_find_replace(),
