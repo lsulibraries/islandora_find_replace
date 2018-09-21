@@ -8,11 +8,11 @@ This fork has added features:
 
 1. Supports submission of 1k plus items in a given batch.
 
-2. Adds the option to use a Regular Expressions to search.
+2. Adds the option to use a regular expressions to search.
 
-3. Allows a batch to be revert datastreams to the version before the batch.
+3. Allows a batch to be revert datastreams to the version prior to the batch replacement.
 
-4. Allows csv download  of object pids  in a batch.
+4. Allows csv download of object pids in a batch.
 
 ## Requirements
 
