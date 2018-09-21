@@ -34,7 +34,7 @@ Further documentation for this module is available at [www.contentmath.com](http
 
 Have an issue with the module?
 
-* [Issue Queue](https://github.com/contentmath/islandora_find_replace/issues)
+* [Issue Queue](https://github.com/lsulibraries/islandora_find_replace/issues)
 
 Need support or additional features or modifications?
 
@@ -44,7 +44,7 @@ Need support or additional features or modifications?
 
 Current maintainers:
 
-* [Mitch MacKenzie](http://www.contentmath.com)
+* [LSU Libraries](http://github.com/lsulibraries)
 
 ## License
 
