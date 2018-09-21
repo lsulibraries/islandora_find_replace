@@ -293,6 +293,17 @@ function islandora_revert_datastream($pid, $dsid, $revert_version, &$context){
   $ds->setContentFromString($string);
 }
 
+/**
+ * matches batch record's "before" datastream version
+ *
+ * @param string $pid
+ *  object pid
+ * @param string $dsid
+ * datastream identifier
+ * @param string $revert_version
+ * pulled from the batch record, matches the datastream that existed
+ * before the batch operation was performed.
+ */
 function datastream_history_match($pid, $dsid, $revert_version) {
   $connection = islandora_get_tuque_connection();
   $history = $connection->api->m->getDatastreamHistory($pid, $dsid);
