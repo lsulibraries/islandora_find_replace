@@ -136,11 +136,13 @@ function get_log_field($id, $field) {
  * @return array $changed
  * array of pids sucessfully changed by batch replace
  */
-function get_changed_pids($query) {
+function get_changed_pids_or_revert_version($query, $revert = FALSE) {
   $result = $query->fetchField();
   $chunks = unserialize($result);
-  $changed  = array_keys($chunks['success']);
-  return $changed;
+  if (isset($chunks)) {
+    $changed_or_revert = $revert ? $chunks['success'] : array_keys($chunks['success']);
+    return $changed_or_revert;
+  }
 }
 
 /**
@@ -149,7 +151,7 @@ function get_changed_pids($query) {
 function download_pid_csv(){
   $id = get_id_from_path();
   $query = get_log_field($id, 'revisions');
-  $csv = implode(',', get_changed_pids($query));
+  $csv = implode(',', get_changed_pids_or_revert_version($query));
   $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
   $headers = [
     'Content-type' => 'text/csv; utf-8',
@@ -176,15 +178,17 @@ function log_dl_form($form, &$form_state) {
 function revert_find_replace() {
   $id = get_id_from_path();
   $query = get_log_field($id,'revisions');
-  $csv = get_changed_pids($query);
+  $csv = get_changed_pids_or_revert_version($query, FALSE);
   $dsid = get_log_field($id, 'dsid');
+  $query_a = get_log_field($id,'revisions');
+  $before_version = get_changed_pids_or_revert_version($query_a, TRUE);
   $dsid = $dsid->fetchField();
   $operations = array();
   foreach ($csv as $pid) {
     $operations[] = array(
       'islandora_revert_datastream',
       array(
-        $pid, $dsid,
+        $pid, $dsid, $before_version[$pid]['before'],
       ),
     );
   }

@@ -270,6 +270,7 @@ function revert_finished($success, $results, $operations) {
   drupal_set_message(t('Revert complete!'));
 }
 
+
 /**
  * Peform reset datastream back one version.
  *
@@ -279,10 +280,12 @@ function revert_finished($success, $results, $operations) {
  *   The datastream string.
  * @param string $context
  *   The target string for the operation.
+ * @param string $revent_version
+ * version of the datastream to revert to.
  * @param array $context
  *   Batch context.
  */
-function islandora_revert_datastream($pid, $dsid, &$context){
+function islandora_revert_datastream($pid, $dsid, $revert_version, &$context){
   $obj = islandora_object_load($pid);
   $string = $obj[$dsid][1]->content;
   $ds = $obj[$dsid];
