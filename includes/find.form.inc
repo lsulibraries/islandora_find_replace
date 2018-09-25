@@ -135,7 +135,7 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
     }
   }
   if ($val['regex'] == TRUE) {
-    if(preg_match(preg_check_delimit($val['search']),null) === FALSE) {
+    if (preg_match(preg_check_delimit($val['search']), null) === FALSE) {
       form_set_error('regex',t('The regular expression must be valid.'));
     }
   }

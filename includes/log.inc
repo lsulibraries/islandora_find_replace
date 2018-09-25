@@ -106,7 +106,7 @@ function islandora_find_replace_operation_log($find_replace) {
 function get_id_from_path() {
   $test = explode('/',$_GET['q']);
   $id = '';
-  if(gettype((int)$test['5']) == 'integer'){
+  if (gettype((int)$test['5']) == 'integer') {
     $id = $test['5'];
   }
   return $id;
@@ -121,7 +121,7 @@ function get_id_from_path() {
  * field from database, either revisions or dsid
  */
 function get_log_field($id, $field) {
-  $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}",array(':id' => $id));
+  $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}", array(':id' => $id));
   $log_id = $current_log->fetchField();
   $query = db_query('SELECT ' . $field  . ' FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
   return $query;
