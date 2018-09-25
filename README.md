@@ -6,14 +6,13 @@ An administrative user interface to perform find & replace on datastream text.
 
 This fork has added features:
 
-1. Previously the table-select on the replace form didn't support submissions that exceeded the php setting max_input_vars. We have supplied an additional checkbox outside of the table-select which allows all targets to be submitted without hitting this limit.
+1. Previously the table-select on the replace.form.inc didn't support submissions that exceeded the php setting max_input_vars. We have supplied an additional checkbox outside of the table-select which allows all targets to be submitted without hitting this limit.
 
-2. Adds the option to use a regular expressions to search.
+2. Adds the option to search for regular expressions within datastreams .
 
-3. Allows a batch to be revert datastreams to the version prior to the batch replacement.
+3. Allows the user to 'undo' a batch replacement from the log.inc form page for a specific batch. Clicking the 'Revert Datastream' button will set the object's datastream to the version prior to the batch replacement.
 
-4. Allows csv download of object pids in a given batch. This can be used in drush commands that take a CSV as input.
-=======
+4. Allows CSV download of object pids in a given batch. This can be used in drush commands that take a CSV as input.
 
 ## Requirements
 
