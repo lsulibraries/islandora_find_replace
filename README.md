@@ -13,7 +13,6 @@ This fork has added features:
 3. Allows a batch to be revert datastreams to the version prior to the batch replacement.
 
 4. Allows csv download of object pids in a given batch. This can be used in drush commands that take a CSV as input.
-=======
 
 ## Requirements
 
