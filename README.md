@@ -13,6 +13,7 @@ This fork has added features:
 3. Allows a batch to be revert datastreams to the version prior to the batch replacement.
 
 4. Allows csv download of object pids in a given batch. This can be used in drush commands that take a CSV as input.
+=======
 
 ## Requirements
 
@@ -34,7 +35,7 @@ Further documentation for this module is available at [www.contentmath.com](http
 
 Have an issue with the module?
 
-* [Issue Queue](https://github.com/contentmath/islandora_find_replace/issues)
+* [Issue Queue](https://github.com/lsulibraries/islandora_find_replace/issues)
 
 Need support or additional features or modifications?
 
@@ -44,7 +45,7 @@ Need support or additional features or modifications?
 
 Current maintainers:
 
-* [Mitch MacKenzie](http://www.contentmath.com)
+* [LSU Libraries](http://github.com/lsulibraries)
 
 ## License
 
