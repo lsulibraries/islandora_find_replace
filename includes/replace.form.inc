@@ -70,6 +70,11 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
     '#type' => 'markup',
     '#markup' =>  "<p>". "Total number of items that match search: " . t(count($find_replace['find_results'])) . "</p>",
   );
+  $php_max_input_vars = 1000;
+  $form['warning'] = array(
+    '#type' => 'markup',
+    '#markup' => "<p>" . "If your set of items is larger than " . $php_max_input_vars . " you should either refine your search/regex or only apply less than " . $php_max_input_vars . " items per batch</p>"
+  );
   $form['preview'] = array(
     '#type' => 'tableselect',
     '#header' => $header,

@@ -309,7 +309,8 @@ function datastream_history_match($pid, $dsid, $revert_version) {
   $history = $connection->api->m->getDatastreamHistory($pid, $dsid);
   foreach ($history as $key => $info) {
     if ($info['dsLocation'] == $revert_version) {
-    return $key;
+      return $key;
+    }
   }
 }
 
@@ -426,18 +427,12 @@ function islandora_find_replace_preview($find_replace, $object) {
     $dsid = $find_replace['dsid'];
     $regex = $find_replace['regex'];
     $datastream = $object[$dsid];
+    $f = $find_replace['find'];
+    $r = $find_replace['replacement'];
     $content1 = $datastream->content;
-    $content2 = islandora_find_replace_string_replace(
-      $find_replace['find'],
-      $find_replace['replacement'],
-      $content1,
-      $regex
-    );
+    $content2 = islandora_find_replace_string_replace($f, $r, $content1, $regex);
     if (strpos($datastream->mimetype, 'xml') !== FALSE) {
-      return islandora_pretty_text_diff_content(
-        htmlentities($content1, ENT_NOQUOTES),
-        htmlentities($content2, ENT_NOQUOTES)
-      );
+      return islandora_pretty_text_diff_content(htmlentities($content1, ENT_NOQUOTES), htmlentities($content2, ENT_NOQUOTES));
     }
     else {
       return islandora_pretty_text_diff_content($content1, $content2);
