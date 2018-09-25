@@ -6,9 +6,9 @@ An administrative user interface to perform find & replace on datastream text.
 
 This fork has added features:
 
-1. Previously the table-select on the replace.form.inc didn't support submissions that exceeded the php setting max_input_vars. We have supplied an additional checkbox outside of the table-select which allows all targets to be submitted without hitting this limit.
+1. The php setting [max_input_vars](https://secure.php.net/manual/en/info.configuration.php#ini.max-input-vars) (which limits the number of input variables that may be accepted and helps prevent DDoS attacks), was reached when the replace.form was submitted with ~1,000+ items. We have supplied an additional checkbox outside of the results table in the replace.form. This allows the number of targets to be submitted without triggering a max_input_vars error, truncating the list of input vars and avoiding the error message. Previous behavior would refresh the replace.form page, and log an error in islandora/tools/find-replace/log. (It is entirely possible that if a user selected 1,001 items from the results table that this error could still be reproduced.)
 
-2. Adds the option to search for regular expressions within datastreams .
+2. The option to search for regular expressions within datastreams has been added (use with caution as it can break your metadata).
 
 3. Allows the user to 'undo' a batch replacement from the log.inc form page for a specific batch. Clicking the 'Revert Datastream' button will set the object's datastream to the version prior to the batch replacement.
 
