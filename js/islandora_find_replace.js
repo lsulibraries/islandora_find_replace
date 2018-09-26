@@ -5,22 +5,20 @@
 
 maxInputVars = Drupal.settings.islandora_find_replace.maxInputVars;
 
-
-
 (function ($) {
+  $.fn.tooManySelected = function() {
+    if(this.parent().parent().parent('.selected').length >= maxInputVars){
+      console.log('too_many');
+    }
+  }
+
   $('.select-all').change(function(){
-      console.log('ok');
-        if($('.form-checkbox').parent().parent().parent('.selected').length >= maxInputVars){
-          console.log('tooooo many');
-      }
+        $('.form-checkbox').tooManySelected();
     });
 
   $('.form-checkbox').change(function(){
-    if(this.checked) {
-        if($('.form-checkbox').parent().parent().parent('.selected').length >= maxInputVars){
-          console.log('tooooo many');
-        }
-
+    if(this.click) {
+        $('.form-checkbox').tooManySelected();
       }
 
   });
