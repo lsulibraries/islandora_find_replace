@@ -5,6 +5,7 @@
  * Form functions for the form to select which objects to update.
  */
 
+
 /**
  * Form function to generate the table select for objects to operate on.
  *
@@ -84,8 +85,23 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
       'admin/islandora/tools/find-replace/find'),
     '#js_select' => TRUE,
   );
+  $max_input_vars = array(
+     "maxInputVars" =>  ini_get("max_input_vars"),
+   );
+   $islandora_path = drupal_get_path('module', 'islandora');
+   $path = drupal_get_path('module', 'islandora_find_replace') . '/js/islandora_find_replace.js';
+   drupal_add_js(array("islandora_find_replace" => $max_input_vars), "setting");
+   $form['#attached']['js'][] = array(
+       'data' => $path,
+       'type' => 'file',
+       'scope' => 'footer',
+   );
+
   return $form;
 }
+
+
+
 
 /**
  * Form submit function for the replace form.
