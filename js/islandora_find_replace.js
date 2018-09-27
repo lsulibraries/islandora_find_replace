@@ -11,10 +11,12 @@ html = `<div class="messages status"><h2 class="element-invisible">Status messag
   Drupal.behaviors.tooManyMessage = {
     attach: function (context, settings) {
       $.fn.tooManySelected = function() {
-        if(this.parent().parent().parent('.selected').length >= maxInputVars){
-          //alert(message);
-          $('#console.clearfix').val(html);
-          console.log($('#console').val());
+        selected = this.parent().parent().parent('.selected').length;
+        console.log(selected);
+        if (selected >= maxInputVars) {
+          alert(message);
+          $('#console.clearfix').append(html);
+          console.log(this.parent().parent().parent('.selected').length);
         }
       }
     }
