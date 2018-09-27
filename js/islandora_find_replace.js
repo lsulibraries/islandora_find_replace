@@ -5,18 +5,27 @@
 
 maxInputVars = Drupal.settings.islandora_find_replace.maxInputVars;
 message = `You have selected more than the php variable max_input_vars will allow. Don't select over ${maxInputVars} items in the form!`;
-html = `<div class="messages status"><h2 class="element-invisible">Status message</h2><pre>${message}</pre></div>`;
+markup = `<div id="console" class="clearfix"><div id="#find_replace_warning" class="messages status"><h2 class="element-invisible">Status message</h2><pre>${message}</pre></div></div>`;
 
 (function ($) {
   Drupal.behaviors.tooManyMessage = {
     attach: function (context, settings) {
       $.fn.tooManySelected = function() {
         selected = this.parent().parent().parent('.selected').length;
-        console.log(selected);
         if (selected >= maxInputVars) {
-          alert(message);
-          $('#console.clearfix').append(html);
-          console.log(this.parent().parent().parent('.selected').length);
+          if ($('#find_replace_warning').length) {
+            console.log('replace');
+            $('#find_replace_warning').html('');
+          }
+          else {
+            console.log('prepend');
+            $('#content.clearfix').prepend(markup);
+          }
+          console.log(selected);
+        }
+        else {
+          console.log('not_greater_than');
+          $('#console.clearfix').html('');
         }
       }
     }
