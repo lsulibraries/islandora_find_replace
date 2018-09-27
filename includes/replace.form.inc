@@ -4,7 +4,7 @@
  * @file
  * Form functions for the form to select which objects to update.
  */
-dsm('what about me?');
+
 /**
  * Form function to generate the table select for objects to operate on.
  *
