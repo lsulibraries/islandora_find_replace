@@ -13,7 +13,6 @@
  */
 function islandora_find_replace_operation_logs() {
   $operations = islandora_find_replace_get_submissions();
-
   $header = array(
     t('ID'),
     t('Content Model'),
@@ -31,7 +30,6 @@ function islandora_find_replace_operation_logs() {
       check_plain($operation->replacement),
     );
   }
-
   return array(
     '#type' => 'markup',
     '#markup' => theme('table', array('header' => $header, 'rows' => $rows)),

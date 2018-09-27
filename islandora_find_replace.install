@@ -36,6 +36,13 @@ function islandora_find_replace_schema() {
         'default' => NULL,
         'description' => 'The datastream ID to be modified.',
       ),
+      'regex' => array(
+        'type' =>'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Regex or string search',
+      ),
       'find' => array(
         'type' => 'text',
         'size' => 'normal',
