@@ -68,14 +68,20 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
     '#markup' => l(t('Back (New Search)'), 'admin/islandora/tools/find-replace/find'),
   );
   $form['total'] = array(
-    '#type' => 'markup',
-    '#markup' =>  "<p>". "Total number of items that match search: " . t(count(unserialize($find_replace['find_results']))) . "</p>",
-  );
+  '#type' => 'markup',
+  '#markup' =>  "<p>Total number of items that match search: " . t(count(unserialize($find_replace['find_results']))) . "</p>",
+);
   $php_max_input_vars = ini_get('max_input_vars');
-  $form['warning'] = array(
-    '#type' => 'markup',
-    '#markup' => "<p>" . "If your set of items is larger than " . $php_max_input_vars . " you can use the 'Process All' button. Alternatively you should refine your search/regex or only apply less than " . $php_max_input_vars . " items per batch</p>"
+  $form['process_all'] =  array(
+    '#type' => 'checkbox',
+    '#title' => t("If selecting all checkboxes in the table below results in a warning, use this checkbox as an alternate means to 'select all'."),
   );
+  if (count($options)) {
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Replace String'),
+    );
+  }
   $form['preview'] = array(
     '#type' => 'tableselect',
     '#header' => $header,
@@ -83,19 +89,19 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
     '#empty' => l(t('No matching objects were found. Search again.'),
       'admin/islandora/tools/find-replace/find'),
     '#js_select' => TRUE,
-    '#attributes' => array('id' => 'selectall'),
+    '#attributes' => array('class' => array('form-checkbox','in_tableselect')),
   );
   $max_input_vars = array(
-     "maxInputVars" =>  ini_get("max_input_vars"),
-   );
-   $islandora_path = drupal_get_path('module', 'islandora');
-   $path = drupal_get_path('module', 'islandora_find_replace') . '/js/islandora_find_replace.js';
-   drupal_add_js(array("islandora_find_replace" => $max_input_vars), "setting");
-   $form['#attached']['js'][] = array(
-       'data' => $path,
-       'type' => 'file',
-       'scope' => 'footer',
-   );
+   "maxInputVars" =>  ini_get("max_input_vars"),
+ );
+ $islandora_path = drupal_get_path('module', 'islandora');
+ $path = drupal_get_path('module', 'islandora_find_replace') . '/js/islandora_find_replace.js';
+ drupal_add_js(array("islandora_find_replace" => $max_input_vars), "setting");
+ $form['#attached']['js'][] = array(
+     'data' => $path,
+     'type' => 'file',
+     'scope' => 'footer',
+ );
 
   return $form;
 }
