@@ -135,8 +135,8 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
     }
   }
   if ($val['regex'] == TRUE) {
-    if (preg_match(preg_check_delimit($val['search']), null) === FALSE) {
-      form_set_error('regex',t('The regular expression must be valid.'));
+    if (preg_match(preg_check_delimit($val['search']), NULL) === FALSE) {
+      form_set_error('regex', t('The regular expression must be valid.'));
     }
   }
 }
@@ -174,7 +174,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
         $form_state['values']['dsid'],
         $form_state['values']['search'],
         $find_replace['id'],
-        $form_state['values']['regex']
+        $form_state['values']['regex'],
       ),
     );
   }

@@ -6,7 +6,6 @@
  */
 
 
-
 /**
  * Implements hook_menu().
  */
@@ -151,7 +150,7 @@ function islandora_find_replace_get_targets($candidate, $dsid, $search, $submiss
   }
   $object = islandora_object_load($candidate['object']);
   $content = $object[$dsid]->content;
-  $count =  $regex ? preg_match_all(preg_check_delimit($search), $content) : substr_count($content, $search);
+  $count = $regex ? preg_match_all(preg_check_delimit($search), $content) : substr_count($content, $search);
   if (isset($object[$dsid]) && $count) {
     if (islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
       $candidate['count'] = $count;
@@ -280,14 +279,12 @@ function revert_finished($success, $results, $operations) {
  *   The object pid.
  * @param string $dsid
  *   The datastream string.
+ * @param string $revert_version
+ *   version of the datastream to revert to.
  * @param string $context
  *   The target string for the operation.
- * @param string $revent_version
- * version of the datastream to revert to.
- * @param array $context
- *   Batch context.
  */
-function islandora_revert_datastream($pid, $dsid, $revert_version, &$context){
+function islandora_revert_datastream($pid, $dsid, $revert_version, &$context) {
   $key = datastream_history_match($pid, $dsid, $revert_version);
   $obj = islandora_object_load($pid);
   $string = $obj[$dsid][$key]->content;
@@ -296,15 +293,15 @@ function islandora_revert_datastream($pid, $dsid, $revert_version, &$context){
 }
 
 /**
- * matches batch record's "before" datastream version
+ * Matches batch record's "before" datastream version.
  *
  * @param string $pid
- *  object pid
+ *   object pid
  * @param string $dsid
- * datastream identifier
+ *   datastream identifier
  * @param string $revert_version
- * pulled from the batch record, matches the datastream that existed
- * before the batch operation was performed.
+ *   pulled from the batch record, matches the datastream that existed
+ *   before the batch operation was performed.
  */
 function datastream_history_match($pid, $dsid, $revert_version) {
   $connection = islandora_get_tuque_connection();
@@ -335,21 +332,22 @@ function islandora_find_replace_string_replace($search, $replace, $content, $reg
   if ($replace == '(empty)') {
     $replace = '';
   }
-   if ($regex) {
+  if ($regex) {
     return preg_replace(preg_check_delimit($search), $replace, $content);
   }
-  else{
+  else {
     return str_replace($search, $replace, $content);
   }
 }
 
 /**
  * Check regex for use of delimeter, escapes if found.
+ *
  * @param string $search
- * The regex to check
+ *   The regex to check.
  *
  * @return string
- * regex with escaped delimiters or original regex
+ *   Regex with escaped delimiters or original regex
  */
 function preg_check_delimit($search) {
   $search = str_replace('/', '\/', $search);
