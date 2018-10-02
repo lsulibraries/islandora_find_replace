@@ -376,7 +376,7 @@ function preg_check_delimit($search) {
 function islandora_find_replace_query($model = FALSE, $collection, $date_property = FALSE, $date_from = FALSE, $date_to = FALSE) {
   $condition = '?object ';
   if ($model) {
-    $condition = 'fm:hasModel <info:fedora/' . $model . '> ; ';
+    $condition .= 'fm:hasModel <info:fedora/' . $model . '> ; ';
   }
 
   if ($collection) {
