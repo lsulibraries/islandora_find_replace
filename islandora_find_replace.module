@@ -203,8 +203,8 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
   if (!isset($context['results']['submission_id'])) {
     $context['results']['submission_id'] = $id;
   }
-  $query = 'SELECT regex from islandora_find_replace where id=' .'\''. $id .'\'';
-  $ask = db_query($query);
+  $query = "SELECT regex from {islandora_find_replace} where id = :id";
+  $ask = db_query($query, array(':id' => $id));
   $regex = $ask->fetchField();
   $object = islandora_object_load($pid);
   $success = FALSE;
