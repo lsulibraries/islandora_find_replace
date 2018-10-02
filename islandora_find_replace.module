@@ -325,6 +325,8 @@ function datastream_history_match($pid, $dsid, $revert_version) {
  *   The replacement string or regex.
  * @param string $content
  *   The target string for the operation.
+ * @param bool $regex
+ *   Whether or not $search is a regex pattern.
  *
  * @return mixed
  *   The modified string if successful.
