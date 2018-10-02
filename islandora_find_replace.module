@@ -379,9 +379,7 @@ function islandora_find_replace_query($model = FALSE, $collection, $date_propert
     $condition .= 'fm:hasModel <info:fedora/' . $model . '> ; ';
   }
 
-  if ($collection) {
-    $condition .= 'fr:isMemberOfCollection <info:fedora/' . $collection . '> ; ';
-  }
+  $condition .= 'fr:isMemberOfCollection <info:fedora/' . $collection . '> ; ';
   if ($date_property) {
     $from = _islandora_find_replace_timestamp_from_form_date($date_from);
     $to = _islandora_find_replace_timestamp_from_form_date($date_to, FALSE);
