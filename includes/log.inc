@@ -123,7 +123,7 @@ function get_id_from_path() {
 function get_log_field($id, $field) {
   $current_log = db_query("SELECT MAX(:id) from {islandora_find_replace}", array(':id' => $id));
   $log_id = $current_log->fetchField();
-  $query = db_query('SELECT ' . $field  . ' FROM {islandora_find_replace} WHERE id=' . '\'' .$log_id . '\'');
+  $query = db_query("SELECT :field FROM {islandora_find_replace} WHERE id=:logid", array(":field" => $field, ':logid' => $log_id));
   return $query;
 }
 
