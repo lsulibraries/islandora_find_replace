@@ -120,10 +120,13 @@ function get_id_from_path() {
  * @param string $field
  * field from database, either revisions or dsid
  */
-function get_log_field($id, $field) {
-  $query = db_query("SELECT $field FROM {islandora_find_replace} WHERE id = :logid", array(":logid" => $id));
-  return $query;
-}
+ function get_log_field($id, $field) {
+   if($field != 'revisions' && $field != 'dsid') {
+     throw new Exception("$field is not legal");
+   }
+   $query = db_query("SELECT $field FROM {islandora_find_replace} WHERE id=:logid", array(':logid' => $id));
+   return $query;
+ }
 
 /**
  * helper to unserialize revised pid log from database query
