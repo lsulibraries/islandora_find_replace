@@ -44,7 +44,7 @@ Need support or additional features or modifications?
 
 Current maintainers:
 
-* [LSU Libraries](http://github.com/lsulibraries)
+* [Content Math](http://www.contentmath.com)
 
 ## License
 
