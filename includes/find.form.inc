@@ -91,8 +91,6 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#description' => t('A single datastream ID (DSID) to search for the string.'),
     '#required' => TRUE,
   );
-  
-  
   $form['regex'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a regular expression'),
@@ -102,7 +100,6 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#return_value' => 1,
     '#default_value' => 0,
   );
-  
   $form['preg_pattern'] = array(
     '#type' => 'textarea',
     '#title' => t('preg_match pattern'),
@@ -132,8 +129,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
        ),
     ),
   );
-  
-  
+
+
   $form['search'] = array(
     '#type' => 'textarea',
     '#title' => t('Search text'),
@@ -152,7 +149,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
   $form['replace'] = array(
     '#type' => 'textarea',
     '#title' => t('Replacement text'),
-    '#description' => t('The text to replace the search with. Special characters must be escaped. 
+    '#description' => t('The text to replace the search with. Special characters must be escaped.
       Use (empty) to replace the search text with nothing.'),
     '#rows' => 1,
     '#states' => array(
@@ -202,7 +199,7 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
   }
   if ($val['regex'] == 1) {
     $regexerror = false;
-    // Verify that pattern starts and ends with 
+    // Verify that pattern starts and ends with
     try {
       $matches = preg_replace($val['preg_pattern'], $val['preg_replacement'], '');
       $regexerror =  $matches === NULL ? true: false;
@@ -227,14 +224,14 @@ function islandora_find_replace_find_form_validate($form, &$form_state) {
  */
 function islandora_find_replace_find_form_submit($form, &$form_state) {
   $candidates = islandora_find_replace_query($form_state['values']['content_model'],
-    $form_state['values']['namespace'],
     $form_state['values']['collection'],
     $form_state['values']['date_property'],
     $form_state['values']['date_from'],
-    $form_state['values']['date_to']
+    $form_state['values']['date_to'],
+    $form_state['values']['namespace']
   );
-  
-  
+
+
   $isregex = $form_state['values']['regex'];
   $searchfor = !$isregex ? $form_state['values']['search'] : $form_state['values']['preg_pattern'];
   $replacewith = !$isregex ? $form_state['values']['replace'] : $form_state['values']['preg_replacement'];
