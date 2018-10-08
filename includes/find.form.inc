@@ -47,7 +47,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
   );
   $collections = islandora_basic_collection_get_collections();
   $collection_options = array();
-  $conten[] = t('- Select -');
+  $collection_options[] = t('- Select -');
   foreach ($collections as $collection) {
     $collection_options[$collection['pid']] = check_plain($collection['label']) . ' - (' . $collection['pid'] . ')';
   }
