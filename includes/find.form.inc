@@ -1,5 +1,5 @@
 <?php
-)
+
 /**
  * @file
  * Form functions for the form to find objects to operate on.
