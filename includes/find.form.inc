@@ -74,7 +74,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
     ),
     '#description' => t('To limit by date, select a date property.'),
   );
- 
+
  $form['find']['date']['date_from'] = array(
     '#type' => 'date',
     '#title' => t('Date From'),
@@ -268,7 +268,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
       ),
     );
   }
- 
+
  $batch = array(
     'operations' => $operations,
     'title' => t('Finding Matching Objects'),
@@ -276,6 +276,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
     'finished' => 'islandora_find_replace_find_complete',
     'progress_message' => t('Processed @current out of @total.'),
   );
+
   batch_set($batch);
   $form_state['redirect'] = 'admin/islandora/tools/find-replace/replace/' . $find_replace['id'];
 }

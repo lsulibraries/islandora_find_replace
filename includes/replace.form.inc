@@ -66,7 +66,6 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
       '#value' => t('Replace String'),
     );
   }
-
   $form['back'] = array(
     '#type' => 'markup',
     '#markup' => l(t('Back (New Search)'), 'admin/islandora/tools/find-replace/find'),

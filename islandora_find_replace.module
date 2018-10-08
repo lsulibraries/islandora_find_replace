@@ -302,7 +302,7 @@ function revert_finished($success, $results, $operations) {
  * @param string $search
  *   The search/find string.
  * @param string $replace
- *   The replacement string or regex.
+ *   The replacement string.
  * @param string $content
  *   The target string for the operation.
  * @param bool $regex
