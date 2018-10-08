@@ -124,24 +124,24 @@ function islandora_find_replace_replace_form_submit($form, &$form_state) {
     array_keys($form_state['values']['preview']) :
     array_keys(array_filter($form_state['values']['preview']));
 
-    $operations = array();
-    foreach ($selected as $select) {
-      $operations[] = array('islandora_find_replace_update_objects', array(
-        $select,
-        $form_state['storage']['find_replace']['dsid'],
-        $form_state['storage']['find_replace']['find'],
-        $form_state['storage']['find_replace']['replacement'],
-        $form_state['storage']['find_replace']['isregex'],
-        $form_state['storage']['find_replace']['id']),
-      );
-    }
-    $batch = array(
-      'operations' => $operations,
-      'title' => t('Replacing Text'),
-      'init_message' => t('Beginning text replacement.'),
-      'finished' => 'islandora_find_replace_update_complete',
-      'progress_message' => t('Processed @current out of @total.'),
+  $operations = array();
+  foreach ($selected as $select) {
+    $operations[] = array('islandora_find_replace_update_objects', array(
+      $select,
+      $form_state['storage']['find_replace']['dsid'],
+      $form_state['storage']['find_replace']['find'],
+      $form_state['storage']['find_replace']['replacement'],
+      $form_state['storage']['find_replace']['isregex'],
+      $form_state['storage']['find_replace']['id']),
     );
-    batch_set($batch);
-    $form_state['redirect'] = 'admin/islandora/tools/find-replace/log/' . $form_state['storage']['find_replace']['id'];
+  }
+  $batch = array(
+    'operations' => $operations,
+    'title' => t('Replacing Text'),
+    'init_message' => t('Beginning text replacement.'),
+    'finished' => 'islandora_find_replace_update_complete',
+    'progress_message' => t('Processed @current out of @total.'),
+  );
+  batch_set($batch);
+  $form_state['redirect'] = 'admin/islandora/tools/find-replace/log/' . $form_state['storage']['find_replace']['id'];
 }
