@@ -5,7 +5,6 @@
  * Main module file for Islandora Find & Replace.
  */
 
-
 /**
  * Implements hook_menu().
  */
@@ -165,6 +164,7 @@ function islandora_find_replace_get_targets($candidate, $dsid, $search, $isregex
   else {
     $count = substr_count($object[$dsid]->content, $search);
   }
+
   if (isset($object[$dsid]) && $count) {
     if (islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
       $candidate['count'] = $count;
@@ -315,7 +315,7 @@ function islandora_find_replace_string_replace($search, $replace, $content) {
   if ($replace == '(empty)') {
     $replace = '';
   }
-    return str_replace($search, $replace, $content);
+  return str_replace($search, $replace, $content);
 }
 
 /**
