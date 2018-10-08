@@ -38,6 +38,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#description' => t('Limit the search to objects with the selected content model.'),
     '#options' => $cmodel_options,
     '#required' => FALSE,
+    '#empty_option' => t(' - Select -'),
   );
   $form['find']['namespace'] = array(
     '#type' => 'textfield',
@@ -46,7 +47,7 @@ function islandora_find_replace_find_form($form, &$form_state) {
   );
   $collections = islandora_basic_collection_get_collections();
   $collection_options = array();
-  $collection_options[] = t('- Select -');
+  $conten[] = t('- Select -');
   foreach ($collections as $collection) {
     $collection_options[$collection['pid']] = check_plain($collection['label']) . ' - (' . $collection['pid'] . ')';
   }
