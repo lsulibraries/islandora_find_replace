@@ -93,11 +93,11 @@ function islandora_find_replace_find_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
-
+  $path = l("regular expression syntax documentation for PHP","http://php.net/manual/en/reference.pcre.pattern.syntax.php");
   $form['regex'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use a regular expression'),
-    '#description' => t('See #preg_match', array('#preg_match'=> l("preg_replace PHP documentation","http://php.net/manual/en/function.preg-replace.php"))),
+    '#description' => t("See $path"),
     '#required' => FALSE,
     '#checked' => 0,
     '#return_value' => 1,
