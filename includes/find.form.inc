@@ -241,6 +241,7 @@ function islandora_find_replace_find_form_submit($form, &$form_state) {
   $replacewith = !$isregex ? $form_state['values']['replace'] : $form_state['values']['preg_replacement'];
   $find_replace = array(
     'cmodel' => $form_state['values']['content_model'],
+    'collection' => $form_state['values']['collection'],
     'namespace' => trim($form_state['values']['namespace']),
     'dsid' => $form_state['values']['dsid'],
     'find' => $searchfor,

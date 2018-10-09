@@ -16,7 +16,7 @@ function islandora_find_replace_operation_logs() {
 
   $header = array(
     t('ID'),
-    t('Content Model'),
+    t('Collection'),
     t('DSID'),
     t('Find'),
     t('Replace'),
@@ -29,7 +29,7 @@ function islandora_find_replace_operation_logs() {
 
     $rows[] = array(
       l($operation->id, 'admin/islandora/tools/find-replace/log/' . $operation->id),
-      check_plain($operation->cmodel),
+      check_plain($operation->collection),
       check_plain($operation->dsid),
       check_plain($operation->find),
       check_plain($operation->replacement),
@@ -64,7 +64,7 @@ function generate_csv(){
   $operations = islandora_find_replace_get_submissions();
   // Add a header row
   fputs($fh, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
-  fputcsv($fh, array('ID','Content Model','Object ID','DSID','Find','Replace'));
+  fputcsv($fh, array('ID','Collection','Object ID','DSID','Find','Replace'));
 
   foreach($operations as $operation) {
     $objectID = '';

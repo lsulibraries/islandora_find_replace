@@ -30,6 +30,12 @@ function islandora_find_replace_schema() {
         'default' => NULL,
         'description' => 'The content model to search.',
       ),
+      'collection' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => NULL,
+        'description' => 'The collection to search within.',
+      ),
       'dsid' => array(
         'type' => 'varchar',
         'length' => 255,
