@@ -62,6 +62,13 @@ function islandora_find_replace_menu() {
     'access arguments' => array(5, 6),
     'type' => MENU_CALLBACK,
   );
+  $items['admin/islandora/tools/find-replace-configue'] = array(
+    'title' => 'Find & Replace configure forms',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_find_replace_admin_form', 1),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/admin.form.inc',
+  );
   return $items;
 }
 

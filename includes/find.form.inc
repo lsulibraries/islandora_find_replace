@@ -18,11 +18,12 @@
  */
 function islandora_find_replace_find_form($form, &$form_state) {
   module_load_include('inc', 'islandora', 'includes/utilities');
+  module_load_include('inc', 'islandora_find_replace', 'includes/language');
   $form = array();
 
   $form['find'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Find Objects'),
+    '#title' => lang('pageHeader'),
     '#description' => t('For faster results, make your search as specific as possible. Objects must match all criteria that you select.'),
   );
 
