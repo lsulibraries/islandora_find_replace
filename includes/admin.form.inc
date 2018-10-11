@@ -1,4 +1,5 @@
 <?php
+
 function islandora_find_replace_admin_form($form, &$form_state) {
   $form['language'] = array(
     '#type' => 'fieldset',
@@ -7,15 +8,14 @@ function islandora_find_replace_admin_form($form, &$form_state) {
   );
   module_load_include('inc', 'islandora_find_replace', 'includes/language');
   $strings = islandora_find_replace_language();
-  $required = array('pageHeader', 'ect',  );
+  $required = array('pageHeader', 'contentmodel', 'namespace', 'collection');
   foreach ($strings as $key => $str) {
-    foreach($required) {
+    foreach($required as $req) {
       if ($key == $req) {
-        $form[$key]['languagechose'] = array(
+        $form["languagechose$key"] = array(
           '#title' => t('Is this field required??'),
           '#type' => 'checkbox',
         );
-
       }
     }
     $form[$key]['language'] = [
@@ -24,10 +24,24 @@ function islandora_find_replace_admin_form($form, &$form_state) {
       '#type' => isset($str['type']) ? $str['type'] : 'textfield',
     ];
      }
-     dpm($form);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
   return $form;
 }
 
-function islandora_find_replace_admin_form_validate() {
-
+function islandora_find_replace_admin_form_validate($form, &$form_state) {
+  $required = array('pageHeader' => 0, 'contentmodel' => 0, 'namespace' => 0, 'collection' => 0);
+  foreach ($required as $string => $set) {
+    $required[$string] = $form_state['complete form']["languagechose$string"]['#value'];
+  }
+  if (!in_array('1', $required)) {
+    drupal_set_message("you must pick one of the first four checkboxes...",'error');
+  }
+  else {
+    dsm('Updated');
+  }
 }
+
+function islandora_find_replace_admin_form_submit() {}
