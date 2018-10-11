@@ -15,7 +15,7 @@ function islandora_find_replace_admin_form($form, &$form_state) {
           '#title' => t('Is this field required??'),
           '#type' => 'checkbox',
         );
-        
+
       }
     }
     $form[$key]['language'] = [
