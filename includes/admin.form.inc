@@ -12,11 +12,11 @@ function islandora_find_replace_admin_form($form, &$form_state) {
   foreach ($strings as $key => $str) {
     foreach($required as $req) {
       if ($key == $req) {
-        $form["languagechose$key"] = array(
+        $form["language_choose_$key"] = array(
           '#title' => t('Require this field?'),
           '#type' => 'checkbox',
           '#description' => t(' Pick one or more.'),
-          '#default_value' => variable_get("languagechose$key"),
+          '#default_value' => variable_get("language_choose_$key", FALSE),
         );
       }
     }
@@ -30,13 +30,14 @@ function islandora_find_replace_admin_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Submit'),
   );
+
   return $form;
 }
 
 function islandora_find_replace_admin_form_validate($form, &$form_state) {
   $required = array('contentmodel' => 0, 'namespace' => 0, 'collection' => 0);
   foreach ($required as $string => $set) {
-    $required[$string] = $form_state['complete form']["languagechose$string"]['#value'];
+    $required[$string] = $form_state['complete form']["language_choose_$string"]['#value'];
   }
   if (!in_array('1', $required)) {
     drupal_set_message("you must pick one of the first three checkboxes. Content Model set to required by default.",'error');
@@ -51,15 +52,15 @@ function islandora_find_replace_admin_form_submit($form, &$form_state) {
 $required = array('contentmodel', 'namespace', 'collection');
 $test = 0;
 foreach($required as $req){
-   if($form["languagechose$req"]['#value'] == true){
-     variable_set("languagechose$req", true);
+   if($form["language_choose_$req"]['#value'] == true){
+     variable_set("language_choose_$req", true);
      $test += 1;
    }
    else{
-     variable_set("languagechose$req", false);
+     variable_set("language_choose_$req", false);
    }
  }
  if ($test < 1) {
-   variable_set("languagechosecontentmodel", true);
+   variable_set("language_choose_contentmodel", true);
  }
 }

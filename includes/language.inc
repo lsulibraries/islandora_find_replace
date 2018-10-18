@@ -62,20 +62,20 @@ function islandora_find_replace_language()
       'default' => t('The text to replace the search with. Special characters must be escaped. Use (empty) to replace the search text with nothing.'),
     ],
     'reg_exp_pattern' => [
-    'title' => t('preg_match pattern'),
-    'default' => t('Preg_match pattern'),
+      'title' => t('preg_match pattern'),
+      'default' => t('Preg_match pattern'),
     ],
     'reg_exp_pattern_desc' => [
-    'title' => t('preg_match pattern description'),
-    'default' => t('The regular expresion to evaluate in the datastream.'),
+      'title' => t('preg_match pattern description'),
+      'default' => t('The regular expresion to evaluate in the datastream.'),
     ],
     'reg_exp_replace' => [
-    'title' => t('preg_match replacement'),
-    'default' => t('Preg_match replacement'),
+      'title' => t('preg_match replacement'),
+      'default' => t('Preg_match replacement'),
     ],
     'reg_exp_replace_desc' => [
-    'title' => t('preg_match replacement description'),
-    'default' => t('The replacement expression against your matched pattern.'),
+      'title' => t('preg_match replacement description'),
+      'default' => t('The replacement expression against your matched pattern.'),
     ],
     'selcheckbox' =>[
       'type' => 'textarea',
