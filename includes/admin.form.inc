@@ -8,13 +8,15 @@ function islandora_find_replace_admin_form($form, &$form_state) {
   );
   module_load_include('inc', 'islandora_find_replace', 'includes/language');
   $strings = islandora_find_replace_language();
-  $required = array('pageHeader', 'contentmodel', 'namespace', 'collection');
+  $required = array('contentmodel', 'namespace', 'collection');
   foreach ($strings as $key => $str) {
     foreach($required as $req) {
       if ($key == $req) {
         $form["languagechose$key"] = array(
-          '#title' => t('Is this field required??'),
+          '#title' => t('Require this field?'),
           '#type' => 'checkbox',
+          '#description' => t(' Pick one or more.'),
+          '#default_value' => variable_get("languagechose$key"),
         );
       }
     }
@@ -32,16 +34,32 @@ function islandora_find_replace_admin_form($form, &$form_state) {
 }
 
 function islandora_find_replace_admin_form_validate($form, &$form_state) {
-  $required = array('pageHeader' => 0, 'contentmodel' => 0, 'namespace' => 0, 'collection' => 0);
+  $required = array('contentmodel' => 0, 'namespace' => 0, 'collection' => 0);
   foreach ($required as $string => $set) {
     $required[$string] = $form_state['complete form']["languagechose$string"]['#value'];
   }
   if (!in_array('1', $required)) {
-    drupal_set_message("you must pick one of the first four checkboxes...",'error');
+    drupal_set_message("you must pick one of the first three checkboxes. Content Model set to required by default.",'error');
+
   }
   else {
     dsm('Updated');
   }
 }
 
-function islandora_find_replace_admin_form_submit() {}
+function islandora_find_replace_admin_form_submit($form, &$form_state) {
+$required = array('contentmodel', 'namespace', 'collection');
+$test = 0;
+foreach($required as $req){
+   if($form["languagechose$req"]['#value'] == true){
+     variable_set("languagechose$req", true);
+     $test += 1;
+   }
+   else{
+     variable_set("languagechose$req", false);
+   }
+ }
+ if ($test < 1) {
+   variable_set("languagechosecontentmodel", true);
+ }
+}
