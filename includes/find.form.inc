@@ -18,12 +18,13 @@
  */
 function islandora_find_replace_find_form($form, &$form_state) {
   module_load_include('inc', 'islandora', 'includes/utilities');
+  module_load_include('inc', 'islandora_find_replace', 'includes/language');
   $form = array();
 
   $form['find'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Find Objects'),
-    '#description' => t('For faster results, make your search as specific as possible. Objects must match all criteria that you select.'),
+    '#title' => lang('pageHeader'),
+    '#description' => lang('pageheaderdesc'),
   );
 
   $content_models = islandora_get_content_models();
@@ -34,16 +35,17 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['find']['content_model'] = array(
     '#type' => 'select',
-    '#title' => t('Content Model'),
-    '#description' => t('Limit the search to objects with the selected content model.'),
+    '#title' => lang('contentmodel'),
+    '#description' => lang('contentdesc'),
     '#options' => $cmodel_options,
-    '#required' => FALSE,
+    '#required' => variable_get('language_choose_contentmodel', FALSE),
     '#empty_option' => t(' - Select -'),
   );
   $form['find']['namespace'] = array(
     '#type' => 'textfield',
-    '#title' => t('Namespace'),
-    '#description' => t('A single namespace to search for the string.'),
+    '#title' => lang('namespace'),
+    '#description' => lang('namespacedesc'),
+    '#required' => variable_get('language_choose_namespace', FALSE),
   );
   $collections = islandora_basic_collection_get_collections();
   $collection_options = array();
@@ -52,10 +54,10 @@ function islandora_find_replace_find_form($form, &$form_state) {
   }
   $form['find']['collection'] = array(
     '#type' => 'select',
-    '#title' => t('Collection'),
-    '#description' => t('Limit the search to objects directly in the selected collection.'),
+    '#title' => lang('collection'),
+    '#description' => lang('collectiondesc'),
     '#options' => $collection_options,
-    '#required' => TRUE,
+    '#required' => variable_get('language_choose_collection', FALSE),
   );
 
   $form['find']['date'] = array(
@@ -88,8 +90,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['dsid'] = array(
     '#type' => 'textfield',
-    '#title' => t('Datastream ID'),
-    '#description' => t('A single datastream ID (DSID) to search for the string.'),
+    '#title' => lang('datastream'),
+    '#description' => lang('datastreamdesc'),
     '#required' => TRUE,
   );
 
@@ -106,8 +108,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['preg_pattern'] = array(
     '#type' => 'textarea',
-    '#title' => t('preg_match pattern'),
-    '#description' => t('The regular expresion to evaluate in the datastream.'),
+    '#title' => lang('reg_exp_pattern'),
+    '#description' => lang('reg_exp_pattern_desc'),
     '#rows' => 1,
     '#states' => array(
       'required' => array(
@@ -121,8 +123,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['preg_replacement'] = array(
     '#type' => 'textarea',
-    '#title' => t('preg_match replacement'),
-    '#description' => t('The replacement expression against your matched pattern'),
+    '#title' => lang('reg_exp_replace'),
+    '#description' => lang('reg_exp_replace_desc'),
     '#rows' => 1,
     '#states' => array(
       'required' => array(
@@ -137,8 +139,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['search'] = array(
     '#type' => 'textarea',
-    '#title' => t('Search text'),
-    '#description' => t('The text to search for in the datastream. Special characters must be escaped.'),
+    '#title' => lang('search'),
+    '#description' => lang('searchdesc'),
     '#rows' => 1,
     '#states' => array(
       'required' => array(
@@ -152,9 +154,8 @@ function islandora_find_replace_find_form($form, &$form_state) {
 
   $form['replace'] = array(
     '#type' => 'textarea',
-    '#title' => t('Replacement text'),
-    '#description' => t('The text to replace the search with. Special characters must be escaped.
-      Use (empty) to replace the search text with nothing.'),
+    '#title' => lang('replacement'),
+    '#description' => lang('replacemntdesc'),
     '#rows' => 1,
     '#states' => array(
       'required' => array(

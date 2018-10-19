@@ -19,6 +19,7 @@
  *   The populated form array.
  */
 function islandora_find_replace_replace_form($form, &$form_state, $find_replace) {
+  module_load_include('inc', 'islandora_find_replace', 'includes/language');
   if ($find_replace['state'] != 'search') {
     drupal_set_message(t('There was a problem loading the submission.'), 'error');
     drupal_goto('admin/islandora/tools/find-replace/find');
@@ -78,7 +79,7 @@ function islandora_find_replace_replace_form($form, &$form_state, $find_replace)
   $php_max_input_vars = ini_get('max_input_vars');
   $form['process_all'] = array(
     '#type' => 'checkbox',
-    '#title' => t("If selecting all checkboxes in the table below results in a warning, use this checkbox as an alternate means to 'select all'."),
+    '#title' => lang('selcheckbox'),
   );
 
   if (count($options)) {
