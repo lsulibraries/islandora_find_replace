@@ -1,6 +1,5 @@
 <?php
-function islandora_find_replace_language()
-{
+function islandora_find_replace_language() {
   return [
     'pageHeader' => [
       'title' => t('Form Title'),
