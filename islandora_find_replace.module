@@ -281,7 +281,6 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
  */
 function islandora_find_replace_update_complete($success, $results, $operations) {
 
-
   db_update('islandora_find_replace')
     ->fields(array('state' => 'complete'))
     ->condition('id', $results['submission_id'])
@@ -312,8 +311,6 @@ function revert_finished($success, $results, $operations) {
  *   The replacement string.
  * @param string $content
  *   The target string for the operation.
- * @param bool $regex
- *   Whether or not $search is a regex pattern.
  *
  * @return mixed
  *   The modified string if successful.
@@ -328,7 +325,7 @@ function islandora_find_replace_string_replace($search, $replace, $content) {
 /**
  * Peform a preg_replace replacement.
  *
- * @param string $search
+ * @param string $pattern
  *   The search/find string.
  * @param string $replace
  *   The replacement string.
@@ -350,8 +347,6 @@ function islandora_find_replace_regex_replace($pattern, $replace, $content) {
  *
  * @param string $model
  *   The content model PID that the operation should apply to.
- * @param string $namespace
- *   The namespace to limit results to.
  * @param bool|string $collection
  *   The collection PID if the user selects a collection.
  * @param bool|string $date_property
@@ -360,6 +355,8 @@ function islandora_find_replace_regex_replace($pattern, $replace, $content) {
  *   The start date for the date filter if selected.
  * @param bool|string $date_to
  *   The end date for the date filter if selected.
+ * @param string $namespace
+ *   The namespace to limit results to.
  *
  * @return array
  *   An array of SPARQL results.
@@ -431,7 +428,7 @@ function islandora_find_replace_preview($find_replace, $object) {
         $content1);
     }
     else {
-    $content2 = islandora_find_replace_string_replace(
+      $content2 = islandora_find_replace_string_replace(
       $find_replace['find'],
       $find_replace['replacement'],
       $content1);
@@ -460,8 +457,6 @@ function islandora_find_replace_preview($find_replace, $object) {
  *   The datastream string.
  * @param string $revert_version
  *   Version of the datastream to revert to.
- * @param string $context
- *   The target string for the operation.
  * @param array $context
  *   Batch context.
  */
