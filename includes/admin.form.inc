@@ -49,18 +49,18 @@ function islandora_find_replace_admin_form_validate($form, &$form_state) {
 }
 
 function islandora_find_replace_admin_form_submit($form, &$form_state) {
-$required = array('contentmodel', 'namespace', 'collection');
-$test = 0;
-foreach($required as $req){
-   if($form["language_choose_$req"]['#value'] == true){
-     variable_set("language_choose_$req", true);
-     $test += 1;
-   }
-   else{
-     variable_set("language_choose_$req", false);
-   }
- }
- if ($test < 1) {
-   variable_set("language_choose_contentmodel", true);
- }
+  $required = array('contentmodel', 'namespace', 'collection');
+  $test = 0;
+  foreach($required as $req) {
+    if ($form["language_choose_$req"]['#value'] == true) {
+      variable_set("language_choose_$req", true);
+      $test += 1;
+    }
+    else {
+      variable_set("language_choose_$req", false);
+    }
+  }
+  if ($test < 1) {
+    variable_set("language_choose_contentmodel", true);
+  }
 }
