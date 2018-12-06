@@ -19,8 +19,11 @@ function islandora_find_replace_operation_log($find_replace) {
     drupal_set_message(t('The Find & Replace log is not available.'), 'error');
     drupal_goto('admin/islandora/tools/find-replace/find');
   }
+
   $revisions = unserialize($find_replace['revisions']);
+
   $dsid = $find_replace['dsid'];
+
   $diff_exists = module_exists('islandora_pretty_text_diff');
   $success_header = array(
     t('Label'),
@@ -30,6 +33,7 @@ function islandora_find_replace_operation_log($find_replace) {
   if ($diff_exists) {
     $success_header[] = t('Datastream Diff');
   }
+
   $success_rows = array();
   foreach ($revisions['success'] as $pid => $info) {
     $object = islandora_object_load($pid);
@@ -61,6 +65,7 @@ function islandora_find_replace_operation_log($find_replace) {
       }
     }
   }
+
   $fail_output = '';
   if (isset($revisions['fail']) && count($revisions['fail'])) {
     $fail_output = t('<h2>Failed Replacements</h2>');
@@ -81,147 +86,22 @@ function islandora_find_replace_operation_log($find_replace) {
     $fail_output .= theme('table', array('header' => $fail_header, 'rows' => $fail_rows));
   }
   $output= array();
-  $output['csv_download'] = drupal_get_form('log_dl_form');
   $output['revert'] = drupal_get_form('revert_form');
   $output['success'] = array(
     '#type' => 'markup',
     '#markup' => t('<h2>Successful Replacements</h2>') . theme('table',
       array('header' => $success_header, 'rows' => $success_rows)),
   );
+  $output['revert'] = drupal_get_form('revert_form');
   if (!empty($fail_output)) {
     $output['fail'] = array(
       '#type' => 'markup',
       '#markup' => $fail_output,
     );
   }
+
   return $output;
 }
-
-/**
- * gets the log id form uri
- *
- * @return string $id
- * Id of current page log
- */
-function get_id_from_path() {
-  $path = explode('/', current_path());
-  $id = '';
-  if (gettype((int)$path['5']) == 'integer') {
-    $id = $path['5'];
-  }
-  return $id;
-}
-
-/**
- * get record of current log from database
- *
- * @param string $id
- * the id of the current log
- * @param string $field
- * field from database, either revisions or dsid
- */
- function get_log_field($id, $field) {
-   if($field != 'revisions' && $field != 'dsid') {
-     throw new Exception("$field is not legal");
-   }
-   $query = db_query("SELECT $field FROM {islandora_find_replace} WHERE id=:logid", array(':logid' => $id));
-   return $query;
- }
-
-/**
- * helper to unserialize revised pid log from database query
- *
- * @param object $query
- * database object of revisions from batch log
- *
- * @return array $changed
- * array of pids sucessfully changed by batch replace
- */
-function get_changed_pids_or_revert_version($query, $revert = FALSE) {
-  $result = $query->fetchField();
-  $chunks = unserialize($result);
-  if (isset($chunks)) {
-    $changed_or_revert = $revert ? $chunks['success'] : array_keys($chunks['success']);
-    return $changed_or_revert;
-  }
-}
-
-/**
- * download the sucessfully revised objects pids as a csv
- */
-function download_pid_csv(){
-  $id = get_id_from_path();
-  $query = get_log_field($id, 'revisions');
-  $csv = implode(',', get_changed_pids_or_revert_version($query));
-  $filename = file_unmanaged_save_data($csv, "temporary://" . 'find_replace.csv', FILE_EXISTS_RENAME);
-  $headers = [
-    'Content-type' => 'text/csv; utf-8',
-    'Content-Dispositon' => 'attachment; filename=islandora_find_replace_results.csv'
-  ];
-  file_transfer($filename, $headers);
-}
-
-/**
- * implements hook_form.
- */
-function log_dl_form($form, &$form_state) {
-  $form['csv_download'] = array(
-     '#type' => 'submit',
-     '#value' => 'Download CSV of PIDS',
-     '#submit' => array('download_pid_csv'),
-  );
- return $form;
-}
-
-/**
- * revert changes made by batch log.
- */
-function revert_find_replace() {
-  $id = get_id_from_path();
-  $query = get_log_field($id,'revisions');
-  $csv = get_changed_pids_or_revert_version($query);
-  $dsid = get_log_field($id, 'dsid');
-  $query_a = get_log_field($id,'revisions');
-  $before_version = get_changed_pids_or_revert_version($query_a, TRUE);
-  $dsid = $dsid->fetchField();
-  $operations = array();
-  foreach ($csv as $pid) {
-    $operations[] = array(
-      'islandora_revert_datastream',
-      array(
-        $pid, $dsid, $before_version[$pid]['before'],
-      ),
-    );
-  }
-  return $operations;
-}
-
-/**
- * implements hook_form.
- */
-function revert_form($form, &$form_state) {
-  $form['revert'] = array(
-    '#type' => 'submit',
-    '#value' => 'Revert this batch',
-  );
-  return $form;
-}
-
-/**
- * implements hook_form_submit.
- */
-function revert_form_submit($form, &$form_state) {
-  $batch = array(
-    'operations' => revert_find_replace(),
-    'title' => t('Revert each object'),
-    'init_message' => t('Beginning revert.'),
-    'finished' => 'revert_finished',
-    'progress_message' => t('Processed @current out of @total.'),
-  );
-  batch_set($batch);
-  $form_state['redirect'] = 'admin/islandora/tools/find-replace/find';
-}
-
 
 /**
  * Get the datastream's version ID based on a recorded datastream location.
@@ -241,4 +121,95 @@ function islandora_find_replace_get_version_id($history, $location) {
     }
   }
   return NULL;
+}
+
+/**
+ * Gets the log id form uri.
+ *
+ * @return string
+ *   Id of current page log.
+ */
+function get_id_from_path() {
+  $path = explode('/', current_path());
+  $id = '';
+  if (gettype((int) $path['5']) == 'integer') {
+    $id = $path['5'];
+  }
+  return $id;
+}
+
+/**
+ * Get record of current log from database.
+ *
+ * @param string $id
+ *   The id of the current log.
+ */
+function get_log_field($id) {
+  $query = db_query("SELECT * FROM {islandora_find_replace} WHERE id=:logid", array(':logid' => $id));
+  return $query;
+}
+
+/**
+ * Helper to unserialize revised pid log from database query.
+ *
+ * @param object $query
+ *   Database object of revisions from batch log.
+ *
+ * @return array
+ *   Results of the log as an array with 'revisions' unserialized.
+ */
+function get_log_as_array($query) {
+  $results = (array) $query->fetchAll();
+  $log = (array) $results[0];
+  $chunks = unserialize($log['revisions']);
+  if (isset($chunks)) {
+    $log['revisions'] = $chunks['success'];
+    return $log;
+  }
+}
+
+/**
+ * Revert changes made by batch log.
+ */
+function revert_find_replace() {
+  $id = get_id_from_path();
+  $query = get_log_field($id);
+  $log = get_log_as_array($query);
+  $operations = array();
+  foreach ($log['revisions'] as $pid => $change) {
+    $operations[] = array(
+      'islandora_revert_datastream',
+      array(
+        $pid, $log['dsid'], $change['before'],
+      ),
+    );
+  }
+  return $operations;
+}
+
+/**
+ * Implements hook_form().
+ */
+function revert_form($form, &$form_state) {
+  $form['revert'] = array(
+    '#type' => 'submit',
+    '#value' => 'Revert this batch',
+  );
+  return $form;
+}
+
+/**
+ * Implements hook_form_submit().
+ */
+function revert_form_submit($form, &$form_state) {
+  $batch = array(
+    'operations' => revert_find_replace(),
+    'title' => t('Revert each object'),
+    'init_message' => t('Beginning revert.'),
+    'finished' => t('Revert finished'),
+    'progress_message' => t('Processed @current out of @total.'),
+  );
+  batch_set($batch);
+  $form_state['redirect'] = 'admin/islandora/tools/find-replace/find';
+  drupal_set_message(t('Revert complete'));
 }

@@ -5,8 +5,6 @@
  * Main module file for Islandora Find & Replace.
  */
 
-
-
 /**
  * Implements hook_menu().
  */
@@ -28,6 +26,14 @@ function islandora_find_replace_menu() {
     'access arguments' => array('use islandora find & replace'),
     'file' => 'includes/logs.inc',
     'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/islandora/tools/find-replace/log/get_csv'] = array(
+    'title' => 'Generate CSV Log',
+    'description' => 'Gererate CSV Log file',
+    'page callback' => 'generate_csv',
+    'access arguments' => array('use islandora find & replace'),
+    'file' => 'includes/logs.inc',
+    'type' => MENU_LOCAL_ACTION,
   );
   $items['admin/islandora/tools/find-replace/replace/%islandora_find_replace'] = array(
     'title' => 'Find & Replace Text',
@@ -55,6 +61,13 @@ function islandora_find_replace_menu() {
     'access callback' => 'islandora_find_replace_preview_access',
     'access arguments' => array(5, 6),
     'type' => MENU_CALLBACK,
+  );
+  $items['admin/islandora/tools/find-replace-configue'] = array(
+    'title' => 'Find & Replace configure forms',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_find_replace_admin_form', 1),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'includes/admin.form.inc',
   );
   return $items;
 }
@@ -140,18 +153,25 @@ function _islandora_find_replace_timestamp_from_form_date($date, $start = TRUE) 
  *   The datastream ID for the operation.
  * @param string $search
  *   The search ("find") string for the operation.
+ * @param bool $isregex
+ *   True if search value is a regex pattern.
  * @param int $submission_id
  *   The database ID for this submission/operation.
  * @param array $context
  *   Batch context.
  */
-function islandora_find_replace_get_targets($candidate, $dsid, $search, $submission_id, $regex, &$context) {
+function islandora_find_replace_get_targets($candidate, $dsid, $search, $isregex, $submission_id, &$context) {
   if (!isset($context['results']['submission_id'])) {
     $context['results']['submission_id'] = $submission_id;
   }
   $object = islandora_object_load($candidate['object']);
-  $content = $object[$dsid]->content;
-  $count =  $regex ? preg_match_all(preg_check_delimit($search), $content) : substr_count($content, $search);
+  if ($isregex) {
+    $count = preg_match_all($search, $object[$dsid]->content);
+  }
+  else {
+    $count = substr_count($object[$dsid]->content, $search);
+  }
+
   if (isset($object[$dsid]) && $count) {
     if (islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
       $candidate['count'] = $count;
@@ -171,6 +191,7 @@ function islandora_find_replace_get_targets($candidate, $dsid, $search, $submiss
  *   Unprocessed operations if $success is FALSE.
  */
 function islandora_find_replace_find_complete($success, $results, $operations) {
+
   $find_replace = islandora_find_replace_load($results['submission_id']);
   if (isset($results['find_results'])) {
     $find_results = $results['find_results'];
@@ -194,25 +215,30 @@ function islandora_find_replace_find_complete($success, $results, $operations) {
  *   The search string that will be replaced.
  * @param string $replace
  *   The replacement string.
+ * @param bool $isregex
+ *   True if search value is a regex pattern.
  * @param int $id
  *   The find & replace submission/operation ID.
  * @param array $context
  *   The batch context.
  */
-function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $id, &$context) {
+function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $isregex, $id, &$context) {
   if (!isset($context['results']['submission_id'])) {
     $context['results']['submission_id'] = $id;
   }
-  $query = 'SELECT regex from islandora_find_replace where id=' .'\''. $id .'\'';
-  $ask = db_query($query);
-  $regex = $ask->fetchField();
   $object = islandora_object_load($pid);
   $success = FALSE;
   if (isset($object[$dsid]) && islandora_datastream_access(ISLANDORA_METADATA_EDIT, $object[$dsid])) {
     try {
       $location_before = $object[$dsid]->location;
-      $content = islandora_find_replace_string_replace($search, $replace, $object[$dsid]->content, $regex);
+      if ($isregex) {
+        $content = islandora_find_replace_regex_replace($search, $replace, $object[$dsid]->content);
+      }
+      else {
+        $content = islandora_find_replace_string_replace($search, $replace, $object[$dsid]->content);
+      }
       $object[$dsid]->setContentFromString($content);
+
       $location_after = $object[$dsid]->location;
       // If successful, track the version.
       if ($location_before != $location_after) {
@@ -220,10 +246,13 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
       }
     }
     catch (Exception $e) {
+
     }
   }
+
   $find_replace = islandora_find_replace_load($id);
   $revisions = unserialize($find_replace['revisions']);
+
   if ($success) {
     if (!isset($revisions['success'])) {
       $revisions['success'] = array();
@@ -251,6 +280,7 @@ function islandora_find_replace_update_objects($pid, $dsid, $search, $replace, $
  *   Unprocessed operations if $success is FALSE.
  */
 function islandora_find_replace_update_complete($success, $results, $operations) {
+
   db_update('islandora_find_replace')
     ->fields(array('state' => 'complete'))
     ->condition('id', $results['submission_id'])
@@ -272,89 +302,45 @@ function revert_finished($success, $results, $operations) {
   drupal_set_message(t('Revert complete!'));
 }
 
-
 /**
- * Peform reset datastream back one version.
- *
- * @param string $pid
- *   The object pid.
- * @param string $dsid
- *   The datastream string.
- * @param string $context
- *   The target string for the operation.
- * @param string $revent_version
- * version of the datastream to revert to.
- * @param array $context
- *   Batch context.
- */
-function islandora_revert_datastream($pid, $dsid, $revert_version, &$context){
-  $key = datastream_history_match($pid, $dsid, $revert_version);
-  $obj = islandora_object_load($pid);
-  $string = $obj[$dsid][$key]->content;
-  $ds = $obj[$dsid];
-  $ds->setContentFromString($string);
-}
-
-/**
- * matches batch record's "before" datastream version
- *
- * @param string $pid
- *  object pid
- * @param string $dsid
- * datastream identifier
- * @param string $revert_version
- * pulled from the batch record, matches the datastream that existed
- * before the batch operation was performed.
- */
-function datastream_history_match($pid, $dsid, $revert_version) {
-  $connection = islandora_get_tuque_connection();
-  $history = $connection->api->m->getDatastreamHistory($pid, $dsid);
-  foreach ($history as $key => $info) {
-    if ($info['dsLocation'] == $revert_version) {
-      return $key;
-    }
-  }
-}
-
-/**
- * Peform a string/regex replacement.
+ * Peform a string replacement.
  *
  * @param string $search
  *   The search/find string.
  * @param string $replace
- *   The replacement string or regex.
+ *   The replacement string.
  * @param string $content
  *   The target string for the operation.
  *
  * @return mixed
  *   The modified string if successful.
  */
-function islandora_find_replace_string_replace($search, $replace, $content, $regex) {
+function islandora_find_replace_string_replace($search, $replace, $content) {
   if ($replace == '(empty)') {
     $replace = '';
   }
-   if ($regex) {
-    return preg_replace(preg_check_delimit($search), $replace, $content);
-  }
-  else{
-    return str_replace($search, $replace, $content);
-  }
+  return str_replace($search, $replace, $content);
 }
 
 /**
- * Check regex for use of delimeter, escapes if found.
- * @param string $search
- * The regex to check
+ * Peform a preg_replace replacement.
  *
- * @return string
- * regex with escaped delimiters or original regex
+ * @param string $pattern
+ *   The search/find string.
+ * @param string $replace
+ *   The replacement string.
+ * @param string $content
+ *   The target string for the operation.
+ *
+ * @return mixed
+ *   The modified string if successful.
  */
-function preg_check_delimit($search) {
-  $search = str_replace('/', '\/', $search);
-  $search = '/' . $search . '/';
-  return $search;
+function islandora_find_replace_regex_replace($pattern, $replace, $content) {
+  if ($replace == '(empty)') {
+    $replace = '';
+  }
+  return preg_replace($pattern, $replace, $content);
 }
-
 
 /**
  * Find objects to perform the find/replace operation based on user form values.
@@ -369,19 +355,23 @@ function preg_check_delimit($search) {
  *   The start date for the date filter if selected.
  * @param bool|string $date_to
  *   The end date for the date filter if selected.
+ * @param string $namespace
+ *   The namespace to limit results to.
  *
  * @return array
  *   An array of SPARQL results.
  */
-function islandora_find_replace_query($model = FALSE, $collection, $date_property = FALSE, $date_from = FALSE, $date_to = FALSE) {
-  $condition = '?object ';
+function islandora_find_replace_query($model = FALSE, $collection, $date_property = FALSE, $date_from = FALSE, $date_to = FALSE, $namespace = FALSE) {
+  $condition = '?object fr:isMemberOfCollection <info:fedora/' . $collection . '> ; ';
+
   if ($model) {
-    $condition = 'fm:hasModel <info:fedora/' . $model . '> ; ';
+    $condition .= ' fm:hasModel <info:fedora/' . $model . '> ; ';
   }
 
-  if ($collection) {
-    $condition .= 'fr:isMemberOfCollection <info:fedora/' . $collection . '> ; ';
+  if ($namespace) {
+    $condition .= 'FILTER(REGEX(STR(?object), "^info:fedora/' . $namespace . ':"))';
   }
+
   if ($date_property) {
     $from = _islandora_find_replace_timestamp_from_form_date($date_from);
     $to = _islandora_find_replace_timestamp_from_form_date($date_to, FALSE);
@@ -427,14 +417,27 @@ function islandora_find_replace_query($model = FALSE, $collection, $date_propert
 function islandora_find_replace_preview($find_replace, $object) {
   if (module_exists('islandora_pretty_text_diff')) {
     $dsid = $find_replace['dsid'];
-    $regex = $find_replace['regex'];
+    $regex = $find_replace['isregex'];
     $datastream = $object[$dsid];
-    $f = $find_replace['find'];
-    $r = $find_replace['replacement'];
     $content1 = $datastream->content;
-    $content2 = islandora_find_replace_string_replace($f, $r, $content1, $regex);
+
+    if ($find_replace['isregex']) {
+      $content2 = islandora_find_replace_regex_replace(
+        $find_replace['find'],
+        $find_replace['replacement'],
+        $content1);
+    }
+    else {
+      $content2 = islandora_find_replace_string_replace(
+      $find_replace['find'],
+      $find_replace['replacement'],
+      $content1);
+    }
     if (strpos($datastream->mimetype, 'xml') !== FALSE) {
-      return islandora_pretty_text_diff_content(htmlentities($content1, ENT_NOQUOTES), htmlentities($content2, ENT_NOQUOTES));
+      return islandora_pretty_text_diff_content(
+        htmlentities($content1, ENT_NOQUOTES),
+        htmlentities($content2, ENT_NOQUOTES)
+      );
     }
     else {
       return islandora_pretty_text_diff_content($content1, $content2);
@@ -442,5 +445,46 @@ function islandora_find_replace_preview($find_replace, $object) {
   }
   else {
     drupal_set_message(t('Islandora Pretty Text Diff is required'), 'warning');
+  }
+}
+
+/**
+ * Peform reset datastream back one version.
+ *
+ * @param string $pid
+ *   The object pid.
+ * @param string $dsid
+ *   The datastream string.
+ * @param string $revert_version
+ *   Version of the datastream to revert to.
+ * @param array $context
+ *   Batch context.
+ */
+function islandora_revert_datastream($pid, $dsid, $revert_version, &$context) {
+  $key = datastream_history_match($pid, $dsid, $revert_version);
+  $obj = islandora_object_load($pid);
+  $string = $obj[$dsid][$key]->content;
+  $ds = $obj[$dsid];
+  $ds->setContentFromString($string);
+}
+
+/**
+ * Matches batch record's "before" datastream version.
+ *
+ * @param string $pid
+ *   Object pid.
+ * @param string $dsid
+ *   Datastream identifier.
+ * @param string $revert_version
+ *   Pulled from the batch record, matches the datastream that existed
+ *   before the batch operation was performed.
+ */
+function datastream_history_match($pid, $dsid, $revert_version) {
+  $connection = islandora_get_tuque_connection();
+  $history = $connection->api->m->getDatastreamHistory($pid, $dsid);
+  foreach ($history as $key => $info) {
+    if ($info['dsLocation'] == $revert_version) {
+      return $key;
+    }
   }
 }

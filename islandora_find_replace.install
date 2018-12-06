@@ -30,18 +30,17 @@ function islandora_find_replace_schema() {
         'default' => NULL,
         'description' => 'The content model to search.',
       ),
+      'collection' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => NULL,
+        'description' => 'The collection to search within.',
+      ),
       'dsid' => array(
         'type' => 'varchar',
         'length' => 255,
         'default' => NULL,
         'description' => 'The datastream ID to be modified.',
-      ),
-      'regex' => array(
-        'type' =>'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Regex or string search',
       ),
       'find' => array(
         'type' => 'text',
@@ -69,8 +68,31 @@ function islandora_find_replace_schema() {
         'serialize' => TRUE,
         'description' => 'The datastream changes that were made.',
       ),
+      'isregex' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'If find and replace was based on a regex.',
+      ),
     ),
     'primary key' => array('id'),
   );
   return $schema;
+}
+
+/**
+ * Add isregex field to schema
+ */
+function islandora_find_replace_update_7100() {
+  $spec = array(
+    'type' => 'int',
+    'size' => 'tiny',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'If find and replace was based on a regex.',
+  );
+  db_add_field('islandora_find_replace', 'isregex', $spec);
 }
